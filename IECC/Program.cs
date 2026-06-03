@@ -124,6 +124,68 @@ app.MapPost("/api/receipt/send", async (ReceiptRequest req, ReceiptService recei
     }
 });
 
+// ── Contact form endpoint ──────────────────────────────
+app.MapPost("/api/contact", async (ContactRequest req, IConfiguration config, ILogger<Program> log) =>
+{
+    if (string.IsNullOrWhiteSpace(req.Email) || string.IsNullOrWhiteSpace(req.Message))
+        return Results.BadRequest(new { error = "Email and message are required" });
+    try
+    {
+        using var smtp = new MailKit.Net.Smtp.SmtpClient();
+        await smtp.ConnectAsync(config["Smtp:Host"]!, int.Parse(config["Smtp:Port"] ?? "587"), false);
+        await smtp.AuthenticateAsync(config["Smtp:Username"]!, config["Smtp:Password"]!);
+        var msg = new MimeKit.MimeMessage();
+        msg.From.Add(new MimeKit.MailboxAddress(config["Smtp:FromName"]!, config["Smtp:FromEmail"]!));
+        msg.To.Add(new MimeKit.MailboxAddress("IECC Admin", config["Smtp:Username"]!));
+        msg.ReplyTo.Add(new MimeKit.MailboxAddress(req.Name, req.Email));
+        msg.Subject = $"[Contact] {req.Subject ?? "General Inquiry"} – {req.Name}";
+        msg.Body = new MimeKit.TextPart("plain")
+        {
+            Text = $"From: {req.Name}\nEmail: {req.Email}\nPhone: {req.Phone ?? "N/A"}\nSubject: {req.Subject}\n\nMessage:\n{req.Message}"
+        };
+        await smtp.SendAsync(msg);
+        await smtp.DisconnectAsync(true);
+        return Results.Ok(new { sent = true });
+    }
+    catch (Exception ex)
+    {
+        log.LogError(ex, "Failed to send contact email from {Email}", req.Email);
+        return Results.Problem("Could not send message. Please email us directly.");
+    }
+});
+
+// ── Volunteer form endpoint ────────────────────────────
+app.MapPost("/api/volunteer", async (VolunteerRequest req, IConfiguration config, ILogger<Program> log) =>
+{
+    if (string.IsNullOrWhiteSpace(req.Email) || string.IsNullOrWhiteSpace(req.Name))
+        return Results.BadRequest(new { error = "Name and email are required" });
+    try
+    {
+        using var smtp = new MailKit.Net.Smtp.SmtpClient();
+        await smtp.ConnectAsync(config["Smtp:Host"]!, int.Parse(config["Smtp:Port"] ?? "587"), false);
+        await smtp.AuthenticateAsync(config["Smtp:Username"]!, config["Smtp:Password"]!);
+        var msg = new MimeKit.MimeMessage();
+        msg.From.Add(new MimeKit.MailboxAddress(config["Smtp:FromName"]!, config["Smtp:FromEmail"]!));
+        msg.To.Add(new MimeKit.MailboxAddress("IECC Admin", config["Smtp:Username"]!));
+        msg.ReplyTo.Add(new MimeKit.MailboxAddress(req.Name, req.Email));
+        msg.Subject = $"[Volunteer] {req.Role} – {req.Name}";
+        msg.Body = new MimeKit.TextPart("plain")
+        {
+            Text = $"Name: {req.Name}\nEmail: {req.Email}\nPhone: {req.Phone ?? "N/A"}\nRole: {req.Role}\nAvailability: {req.Availability ?? "N/A"}\n\nMessage:\n{req.Message ?? "None"}"
+        };
+        await smtp.SendAsync(msg);
+        await smtp.DisconnectAsync(true);
+        return Results.Ok(new { sent = true });
+    }
+    catch (Exception ex)
+    {
+        log.LogError(ex, "Failed to send volunteer email from {Email}", req.Email);
+        return Results.Problem("Could not submit application. Please email us directly.");
+    }
+});
+
 app.Run();
 
 record CreateOrderRequest(decimal Amount);
+record ContactRequest(string Name, string Email, string? Phone, string? Subject, string Message);
+record VolunteerRequest(string Name, string Email, string? Phone, string Role, string? Availability, string? Message);

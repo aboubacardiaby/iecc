@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Events – IECC Masjid</title>
+  <meta name="description" content="Upcoming events at IECC Masjid including Jumu'ah, Eid prayers, community iftars, Islamic school, and youth programs in Crystal, MN."/>
+  <link rel="stylesheet" href="styles.css"/><link rel="stylesheet" href="site.css"/>
+</head>
+<body>
+<div id="nav-ph"></div>
+
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <span class="page-eye">2026 Calendar</span>
+    <h1>Community Events</h1>
+    <p>Religious observances, educational programs, social gatherings, and fundraising events — all in one place.</p>
+  </div>
+</section>
+
+<section class="sc sc-alt">
+  <div class="sc-container">
+
+    <!-- Filter tabs -->
+    <div class="filter-tabs reveal">
+      <button class="filter-tab active" data-cat="all">All Events</button>
+      <button class="filter-tab" data-cat="religious">Religious</button>
+      <button class="filter-tab" data-cat="educational">Educational</button>
+      <button class="filter-tab" data-cat="social">Social</button>
+      <button class="filter-tab" data-cat="fundraising">Fundraising</button>
+    </div>
+
+    <div class="events-grid">
+
+      <!-- Weekly: Jumu'ah -->
+      <div class="event-card reveal rd1" data-cat="religious">
+        <div class="edb"><div class="edb-month">FRI</div><div class="edb-day" style="font-size:1.3rem;padding-top:4px">Weekly</div></div>
+        <div class="ecb">
+          <span class="ecat cat-religious">Religious</span>
+          <div class="etitle">Jumu'ah Prayer &amp; Khutbah</div>
+          <div class="emeta">
+            <div class="emeta-row">🕐 Khutbah 1:00 PM · Salah ~1:30 PM</div>
+            <div class="emeta-row">📍 IECC Masjid – Main Hall</div>
+            <div class="emeta-row">🆓 Free – All Welcome</div>
+          </div>
+          <p style="font-size:.8rem;color:#4f6859;line-height:1.55;margin-bottom:14px">Join us every Friday for the congregational Jumu'ah prayer. Khutbah delivered in English and Arabic.</p>
+          <a href="/contact.html" class="btn btn-outline-g btn-sm" style="margin-top:auto">Get Directions →</a>
+        </div>
+      </div>
+
+      <!-- Islamic School Registration -->
+      <div class="event-card reveal rd2" data-cat="educational">
+        <div class="edb"><div class="edb-month">JUL</div><div class="edb-day">19</div></div>
+        <div class="ecb">
+          <span class="ecat cat-educational">Educational</span>
+          <div class="etitle">Islamic School Summer Registration Day</div>
+          <div class="emeta">
+            <div class="emeta-row">🕐 Saturday · 10:00 AM – 2:00 PM</div>
+            <div class="emeta-row">📍 IECC Masjid Classrooms</div>
+            <div class="emeta-row">👶 Ages 5–16 · Free Enrollment</div>
+          </div>
+          <p style="font-size:.8rem;color:#4f6859;line-height:1.55;margin-bottom:14px">Register your children for the fall semester of Weekend Islamic School. Meet the teachers, tour classrooms, and get your questions answered.</p>
+          <a href="/contact.html" class="btn btn-outline-g btn-sm" style="margin-top:auto">Register Now →</a>
+        </div>
+      </div>
+
+      <!-- Youth Night -->
+      <div class="event-card reveal rd3" data-cat="social">
+        <div class="edb"><div class="edb-month">JUL</div><div class="edb-day">25</div></div>
+        <div class="ecb">
+          <span class="ecat cat-social">Social</span>
+          <div class="etitle">Youth Night – Basketball &amp; BBQ</div>
+          <div class="emeta">
+            <div class="emeta-row">🕐 Friday · 6:00 PM – 9:00 PM</div>
+            <div class="emeta-row">📍 Crystal Community Center</div>
+            <div class="emeta-row">🧒 Ages 13–19 · Free</div>
+          </div>
+          <p style="font-size:.8rem;color:#4f6859;line-height:1.55;margin-bottom:14px">Monthly youth social with basketball, games, halal BBQ, and Islamic reflection. A safe, fun environment for Muslim teens in Crystal.</p>
+        </div>
+      </div>
+
+      <!-- Community Fundraiser -->
+      <div class="event-card reveal rd1" data-cat="fundraising">
+        <div class="edb"><div class="edb-month">AUG</div><div class="edb-day">02</div></div>
+        <div class="ecb">
+          <span class="ecat cat-fundraising">Fundraising</span>
+          <div class="etitle">Annual Community Fundraising Dinner</div>
+          <div class="emeta">
+            <div class="emeta-row">🕐 Saturday · 6:30 PM – 9:30 PM</div>
+            <div class="emeta-row">📍 Crystal Community Hall</div>
+            <div class="emeta-row">🎟️ Tickets Required</div>
+          </div>
+          <p style="font-size:.8rem;color:#4f6859;line-height:1.55;margin-bottom:14px">Our largest fundraiser of the year. Enjoy a halal dinner, inspiring speakers, live auction, and a chance to contribute to completing our Masjid.</p>
+          <button onclick="openModal()" class="btn btn-gold btn-sm" style="margin-top:auto">Donate Now</button>
+        </div>
+      </div>
+
+      <!-- Sisters Halaqa -->
+      <div class="event-card reveal rd2" data-cat="educational">
+        <div class="edb"><div class="edb-month">AUG</div><div class="edb-day">10</div></div>
+        <div class="ecb">
+          <span class="ecat cat-educational">Educational</span>
+          <div class="etitle">Sisters' Circle – Tafsir Study</div>
+          <div class="emeta">
+            <div class="emeta-row">🕐 Sunday · 2:00 PM – 4:00 PM</div>
+            <div class="emeta-row">📍 Sisters' Room, IECC Masjid</div>
+            <div class="emeta-row">👩 Sisters Only · Free</div>
+          </div>
+          <p style="font-size:.8rem;color:#4f6859;line-height:1.55;margin-bottom:14px">Monthly deep-dive Tafsir session for sisters. This month: Surah Al-Kahf — lessons on faith, trials, and gratitude. Light refreshments provided.</p>
+        </div>
+      </div>
+
+      <!-- Back to School -->
+      <div class="event-card reveal rd3" data-cat="social">
+        <div class="edb"><div class="edb-month">AUG</div><div class="edb-day">23</div></div>
+        <div class="ecb">
+          <span class="ecat cat-social">Social</span>
+          <div class="etitle">Back-to-School Community Picnic</div>
+          <div class="emeta">
+            <div class="emeta-row">🕐 Saturday · 12:00 PM – 4:00 PM</div>
+            <div class="emeta-row">📍 Palmer Lake Park, Crystal</div>
+            <div class="emeta-row">👨‍👩‍👧‍👦 All families welcome · Free</div>
+          </div>
+          <p style="font-size:.8rem;color:#4f6859;line-height:1.55;margin-bottom:14px">End-of-summer family picnic to celebrate and prepare for the new school year. Games, food, and a du'a for students and teachers.</p>
+        </div>
+      </div>
+
+      <!-- Islamic New Year -->
+      <div class="event-card reveal rd1" data-cat="religious">
+        <div class="edb"><div class="edb-month">SEP</div><div class="edb-day">06</div></div>
+        <div class="ecb">
+          <span class="ecat cat-religious">Religious</span>
+          <div class="etitle">Islamic New Year Gathering (1448 AH)</div>
+          <div class="emeta">
+            <div class="emeta-row">🕐 Saturday · 7:00 PM – 9:00 PM</div>
+            <div class="emeta-row">📍 IECC Masjid – Main Hall</div>
+            <div class="emeta-row">🆓 Free – All Welcome</div>
+          </div>
+          <p style="font-size:.8rem;color:#4f6859;line-height:1.55;margin-bottom:14px">Reflect on the year past and set intentions for the new Hijri year. Special talk on the significance of Muharram and the lessons of Ashura.</p>
+        </div>
+      </div>
+
+      <!-- Interfaith -->
+      <div class="event-card reveal rd2" data-cat="social">
+        <div class="edb"><div class="edb-month">OCT</div><div class="edb-day">11</div></div>
+        <div class="ecb">
+          <span class="ecat cat-social">Social</span>
+          <div class="etitle">Open Masjid Day – Interfaith Tour</div>
+          <div class="emeta">
+            <div class="emeta-row">🕐 Saturday · 11:00 AM – 3:00 PM</div>
+            <div class="emeta-row">📍 IECC Masjid</div>
+            <div class="emeta-row">🌍 Open to all neighbors</div>
+          </div>
+          <p style="font-size:.8rem;color:#4f6859;line-height:1.55;margin-bottom:14px">Invite neighbors, colleagues, and friends to learn about Islam and see our Masjid. Guided tours, Q&amp;A sessions, and halal refreshments.</p>
+        </div>
+      </div>
+
+      <!-- Quran Competition -->
+      <div class="event-card reveal rd3" data-cat="educational">
+        <div class="edb"><div class="edb-month">NOV</div><div class="edb-day">08</div></div>
+        <div class="ecb">
+          <span class="ecat cat-educational">Educational</span>
+          <div class="etitle">Annual Quran Recitation Competition</div>
+          <div class="emeta">
+            <div class="emeta-row">🕐 Saturday · 10:00 AM – 3:00 PM</div>
+            <div class="emeta-row">📍 IECC Masjid – Main Hall</div>
+            <div class="emeta-row">👶 Open to all ages</div>
+          </div>
+          <p style="font-size:.8rem;color:#4f6859;line-height:1.55;margin-bottom:14px">Students from our Islamic School and Quran program showcase their recitation. Categories by age and level. Prizes and certificates for all participants.</p>
+          <a href="/contact.html" class="btn btn-outline-g btn-sm" style="margin-top:auto">Register Child →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ────────────────────────────────────────────── -->
+<section class="sc sc-dark" style="text-align:center">
+  <div class="sc-container reveal">
+    <span class="eyebrow eyebrow-gold">Suggest an Event</span>
+    <h2 class="sc-h2 sc-h2-light">Have an Idea for the Community?</h2>
+    <p class="sc-lead light center" style="margin-bottom:26px">We welcome community-led events and proposals. Reach out to our events team to discuss your idea.</p>
+    <a href="/contact.html" class="btn btn-gold btn-lg">Contact Our Team</a>
+  </div>
+</section>
+
+<div id="footer-ph"></div>
+<div id="modal-ph"></div>
+<div class="toast" id="toast"></div>
+<script src="app.js"></script><script src="site.js"></script>
+</body>
+</html>

@@ -1,577 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>IECC Masjid – Islamic Education & Cultural Center · Crystal, MN</title>
-  <meta name="description" content="Help complete our Masjid project in Crystal, MN. Donate today to build a lasting place of worship, education, and community for generations to come." />
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="description" content="Welcome to IECC Masjid in Crystal, MN. Join us for prayer, education, and community. Help complete our Masjid building project."/>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="site.css"/>
 </head>
 <body>
+<div id="nav-ph"></div>
 
-<!-- ══════════════════════════════════════════════════════
-     NAVIGATION
-═══════════════════════════════════════════════════════ -->
-<nav class="lp-nav" id="lp-nav">
-  <div class="lp-nav-inner">
-    <a href="#" class="lp-nav-logo">
-      <svg viewBox="0 0 60 60" width="38" height="38" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="30" cy="30" r="28" fill="#1a3d2a" stroke="#e8a020" stroke-width="2"/>
-        <path d="M18 34 Q30 16 42 34" fill="#e8a020"/>
-        <rect x="14" y="26" width="5" height="10" fill="#e8a020" rx="1"/>
-        <rect x="15.5" y="22" width="2" height="5" fill="#e8a020"/>
-        <rect x="41" y="26" width="5" height="10" fill="#e8a020" rx="1"/>
-        <rect x="42.5" y="22" width="2" height="5" fill="#e8a020"/>
-        <rect x="16" y="34" width="28" height="8" fill="#e8a020" rx="1"/>
-        <path d="M27 42 L27 37 Q30 34 33 37 L33 42 Z" fill="#1a3d2a"/>
-        <path d="M28.5 20 Q32 18 35 21 Q31 19 28.5 22 Z" fill="#fff"/>
-        <circle cx="34" cy="14" r="1.5" fill="#fff"/>
-      </svg>
-      <div class="lp-nav-logo-text">
-        <span class="lp-nav-name">IECC</span>
-        <span class="lp-nav-sub">MASJID</span>
-      </div>
-    </a>
-
-    <button class="lp-nav-toggle" id="nav-toggle" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
-
-    <ul class="lp-nav-links" id="nav-links">
-      <li><a href="#about"    class="lp-nav-link" onclick="closeNav()">About</a></li>
-      <li><a href="#programs" class="lp-nav-link" onclick="closeNav()">Programs</a></li>
-      <li><a href="#campaign" class="lp-nav-link" onclick="closeNav()">Campaign</a></li>
-      <li><a href="#contact"  class="lp-nav-link" onclick="closeNav()">Contact</a></li>
-      <li><button class="lp-nav-cta" onclick="openModal(); closeNav()">&#9829; Donate Now</button></li>
-    </ul>
-  </div>
-</nav>
-
-<!-- ══════════════════════════════════════════════════════
-     HERO
-═══════════════════════════════════════════════════════ -->
+<!-- ── HERO ──────────────────────────────────────────── -->
 <section class="lp-hero">
   <div class="lp-hero-inner">
     <div class="lp-hero-text">
       <p class="lp-hero-eyebrow">Crystal, MN &nbsp;·&nbsp; 4801 Welcome Ave North</p>
-      <h1 class="lp-hero-h1">
-        Welcome to<br>
-        <span class="lp-hero-gold">IECC Masjid</span>
-      </h1>
-      <p class="lp-hero-subtitle">
-        Islamic Education &amp; Cultural Center — a place of worship,<br>
-        learning, and community for generations to come.
-      </p>
+      <h1 class="lp-hero-h1">Welcome to<br><span class="lp-hero-gold">IECC Masjid</span></h1>
+      <p class="lp-hero-subtitle">A place of worship, learning, and community<br>for generations to come.</p>
       <div class="lp-hero-actions">
         <button class="lp-btn-primary" onclick="openModal()">&#9829; Donate Now</button>
-        <a href="#about" class="lp-btn-secondary">Learn More</a>
+        <a href="/about.html" class="lp-btn-secondary">Learn More</a>
       </div>
       <div class="lp-hero-stats">
-        <div class="lp-hero-stat">
-          <span class="lp-hero-stat-val" id="hero-raised">$206,000</span>
-          <span class="lp-hero-stat-lbl">Raised</span>
-        </div>
+        <div class="lp-hero-stat"><span class="lp-hero-stat-val">$206K</span><span class="lp-hero-stat-lbl">Raised</span></div>
         <div class="lp-hero-stat-div"></div>
-        <div class="lp-hero-stat">
-          <span class="lp-hero-stat-val" id="hero-pct">59%</span>
-          <span class="lp-hero-stat-lbl">Funded</span>
-        </div>
+        <div class="lp-hero-stat"><span class="lp-hero-stat-val">59%</span><span class="lp-hero-stat-lbl">Funded</span></div>
         <div class="lp-hero-stat-div"></div>
-        <div class="lp-hero-stat">
-          <span class="lp-hero-stat-val">$350,000</span>
-          <span class="lp-hero-stat-lbl">Goal</span>
-        </div>
+        <div class="lp-hero-stat"><span class="lp-hero-stat-val">$350K</span><span class="lp-hero-stat-lbl">Goal</span></div>
       </div>
     </div>
-
     <div class="lp-hero-art">
       <svg viewBox="0 0 340 240" xmlns="http://www.w3.org/2000/svg" width="100%" aria-hidden="true">
-        <!-- Sky gradient -->
         <defs>
-          <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#0d2a1e"/>
-            <stop offset="100%" stop-color="#1a4a30"/>
-          </linearGradient>
-          <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#152b1f"/>
-            <stop offset="100%" stop-color="#0d1f16"/>
-          </linearGradient>
+          <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0d2a1e"/><stop offset="100%" stop-color="#1a4a30"/></linearGradient>
         </defs>
-        <!-- Background -->
-        <rect width="340" height="240" fill="url(#skyGrad)"/>
-        <rect y="165" width="340" height="75" fill="url(#groundGrad)"/>
-        <!-- Stars -->
+        <rect width="340" height="240" fill="url(#skyG)"/>
+        <rect y="165" width="340" height="75" fill="#0d1f16"/>
         <circle cx="22" cy="22" r="1.5" fill="#fff" opacity="0.8"/>
-        <circle cx="55" cy="14" r="1" fill="#fff" opacity="0.6"/>
         <circle cx="290" cy="18" r="1.5" fill="#fff" opacity="0.7"/>
-        <circle cx="318" cy="30" r="1" fill="#fff" opacity="0.5"/>
         <circle cx="140" cy="12" r="1" fill="#fff" opacity="0.6"/>
         <circle cx="260" cy="10" r="1.2" fill="#fff" opacity="0.7"/>
-        <circle cx="80" cy="35" r="0.8" fill="#fff" opacity="0.5"/>
-        <!-- Small side minarets -->
         <rect x="38" y="80" width="16" height="95" fill="#b89a5e" rx="2"/>
         <ellipse cx="46" cy="80" rx="8" ry="6" fill="#c8a96e"/>
         <polygon points="46,62 40,80 52,80" fill="#e8a020"/>
         <rect x="286" y="80" width="16" height="95" fill="#b89a5e" rx="2"/>
         <ellipse cx="294" cy="80" rx="8" ry="6" fill="#c8a96e"/>
         <polygon points="294,62 288,80 300,80" fill="#e8a020"/>
-        <!-- Main building -->
         <rect x="68" y="100" width="204" height="75" fill="#c8a96e" rx="2"/>
-        <!-- Main dome -->
         <ellipse cx="170" cy="100" rx="55" ry="40" fill="#d4a843"/>
         <ellipse cx="170" cy="103" rx="18" ry="12" fill="#1a3d2a"/>
-        <!-- Secondary domes -->
         <ellipse cx="100" cy="108" rx="26" ry="18" fill="#c89838"/>
         <ellipse cx="240" cy="108" rx="26" ry="18" fill="#c89838"/>
-        <!-- Arched windows -->
         <path d="M96,155 L96,135 Q108,122 120,135 L120,155 Z" fill="#1a3d2a"/>
         <path d="M220,155 L220,135 Q232,122 244,135 L244,155 Z" fill="#1a3d2a"/>
-        <!-- Main entrance arch -->
         <path d="M152,175 L152,140 Q170,120 188,140 L188,175 Z" fill="#1a3d2a"/>
-        <!-- Walkway -->
         <rect x="155" y="175" width="30" height="65" fill="#b08844"/>
-        <!-- Decorative lights -->
-        <circle cx="100" cy="95" r="3" fill="#e8a020" opacity="0.9"/>
-        <circle cx="170" cy="62" r="3" fill="#e8a020" opacity="0.9"/>
-        <circle cx="240" cy="95" r="3" fill="#e8a020" opacity="0.9"/>
-        <!-- Crescent on main dome -->
         <path d="M163,74 Q172,68 181,74 Q172,70 163,77 Z" fill="#fff"/>
         <circle cx="179" cy="62" r="3" fill="#fff"/>
-        <!-- Ground detail -->
         <rect x="0" y="168" width="340" height="3" fill="#e8a020" opacity="0.3"/>
-        <!-- Lanterns on walkway -->
-        <circle cx="148" cy="178" r="4" fill="#e8a020" opacity="0.7"/>
-        <circle cx="192" cy="178" r="4" fill="#e8a020" opacity="0.7"/>
       </svg>
     </div>
   </div>
-
-  <!-- Scroll indicator -->
-  <a href="#about" class="lp-scroll-down" aria-label="Scroll down">
-    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#e8a020" stroke-width="2">
-      <path d="M12 5v14M5 12l7 7 7-7"/>
-    </svg>
+  <a href="#prayer-strip" class="lp-scroll-down" aria-label="Scroll down">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#e8a020" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
   </a>
 </section>
 
-<!-- ══════════════════════════════════════════════════════
-     ABOUT
-═══════════════════════════════════════════════════════ -->
-<section class="lp-about" id="about">
-  <div class="lp-section-inner">
-    <div class="lp-about-text">
-      <p class="lp-section-eyebrow">Our Mission</p>
-      <h2 class="lp-section-h2">A Home for Our Community</h2>
-      <p class="lp-body">
-        For years, families in Crystal, MN have dreamed of a place where we can pray together,
-        educate our youth, and strengthen our community bonds. That dream is now closer than ever.
-      </p>
-      <p class="lp-body">
-        We are in the final stages of completing our property at <strong>4801 Welcome Ave North</strong>
-        as a full Masjid and Islamic Education &amp; Cultural Center — a permanent home for
-        the Muslim community in the Twin Cities area.
-      </p>
-      <p class="lp-body">
-        Before we can open the doors, we need to complete safety requirements, wudu facilities,
-        and occupancy preparations. <strong>Your donation brings us one step closer.</strong>
-      </p>
-      <div class="lp-about-badges">
-        <div class="lp-badge">
-          <span class="lp-badge-icon">🕌</span>
-          <span>501(c)(3) Nonprofit</span>
-        </div>
-        <div class="lp-badge">
-          <span class="lp-badge-icon">📍</span>
-          <span>Crystal, MN</span>
-        </div>
-        <div class="lp-badge">
-          <span class="lp-badge-icon">🤲</span>
-          <span>Tax Deductible</span>
-        </div>
-      </div>
-    </div>
+<!-- ── PRAYER STRIP ───────────────────────────────────── -->
+<div id="prayer-strip" class="prayer-strip"></div>
 
-    <div class="lp-about-visual">
-      <div class="lp-about-card">
-        <div class="lp-about-card-icon">🕌</div>
-        <h3>Prayer &amp; Worship</h3>
-        <p>A dedicated space for daily prayers, Jumu'ah, and community gatherings.</p>
-      </div>
-      <div class="lp-about-card">
-        <div class="lp-about-card-icon">📚</div>
-        <h3>Islamic Education</h3>
-        <p>Quran classes, Islamic studies, and after-school programs for all ages.</p>
-      </div>
-      <div class="lp-about-card">
-        <div class="lp-about-card-icon">👨‍👩‍👧‍👦</div>
-        <h3>Community &amp; Culture</h3>
-        <p>Events, cultural celebrations, and a welcoming space for every family.</p>
-      </div>
-      <div class="lp-about-card">
-        <div class="lp-about-card-icon">🌱</div>
-        <h3>Youth Development</h3>
-        <p>Mentorship, guidance, and programs to nurture the next generation.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════
-     PROGRAMS
-═══════════════════════════════════════════════════════ -->
-<section class="lp-programs" id="programs">
-  <div class="lp-section-inner lp-section-center">
-    <p class="lp-section-eyebrow lp-eyebrow-light">What We Offer</p>
-    <h2 class="lp-section-h2 lp-h2-light">Programs &amp; Services</h2>
-    <p class="lp-programs-sub">
-      Once complete, the IECC Masjid will serve as a full-service Islamic center offering:
-    </p>
-    <div class="lp-programs-grid">
-      <div class="lp-program-item">
-        <div class="lp-program-icon">🕋</div>
-        <h3>Five Daily Prayers</h3>
-        <p>Congregational Salah led by a qualified Imam with a welcoming prayer hall for men and women.</p>
-      </div>
-      <div class="lp-program-item">
-        <div class="lp-program-icon">📖</div>
-        <h3>Quran &amp; Arabic Classes</h3>
-        <p>Weekend and weekday Quran memorization and Arabic language classes for children and adults.</p>
-      </div>
-      <div class="lp-program-item">
-        <div class="lp-program-icon">🧒</div>
-        <h3>Youth Programs</h3>
-        <p>After-school mentorship, Islamic studies, sports activities, and leadership development.</p>
-      </div>
-      <div class="lp-program-item">
-        <div class="lp-program-icon">🤝</div>
-        <h3>Community Events</h3>
-        <p>Eid celebrations, iftar gatherings, marriage ceremonies, and interfaith outreach.</p>
-      </div>
-      <div class="lp-program-item">
-        <div class="lp-program-icon">💧</div>
-        <h3>Wudu Facilities</h3>
-        <p>Properly equipped and clean wudu stations for brothers and sisters to perform purification.</p>
-      </div>
-      <div class="lp-program-item">
-        <div class="lp-program-icon">📋</div>
-        <h3>Social Services</h3>
-        <p>Community support, new Muslim resources, halal food pantry, and counseling referrals.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════
-     CAMPAIGN / DONATE
-═══════════════════════════════════════════════════════ -->
-<section class="lp-campaign" id="campaign">
-  <div class="lp-section-inner">
-
-    <div class="lp-campaign-text">
-      <p class="lp-section-eyebrow lp-eyebrow-light">Fundraising Campaign</p>
-      <h2 class="lp-section-h2 lp-h2-light">Help Complete<br>Our Masjid Project</h2>
-      <p class="lp-campaign-body">
-        Alhamdulillah! Through the generosity of our community we have already raised
-        <strong>$206,000</strong> towards our goal of <strong>$350,000</strong>.
-        We need your help to cross the finish line.
-      </p>
-
-      <ul class="lp-needs-list">
-        <li><span class="lp-need-check">✓</span><span>🔥</span> Fire Sprinkler System Installation</li>
-        <li><span class="lp-need-check">✓</span><span>🛡️</span> Safety &amp; Occupancy Requirements</li>
-        <li><span class="lp-need-check">✓</span><span>⚡</span> Electrical Upgrades</li>
-        <li><span class="lp-need-check">✓</span><span>🔧</span> Plumbing Improvements</li>
-        <li><span class="lp-need-check">✓</span><span>🏠</span> Interior Renovations</li>
-        <li><span class="lp-need-check">✓</span><span>💧</span> Wudu Facilities</li>
-      </ul>
-
-      <div class="lp-campaign-ways">
-        <p class="lp-campaign-ways-title">Ways to Give</p>
-        <div class="lp-campaign-ways-row">
-          <div class="lp-way">💵<span>One Time</span></div>
-          <div class="lp-way">🔄<span>Monthly</span></div>
-          <div class="lp-way">🏢<span>Corporate</span></div>
-          <div class="lp-way">👨‍👩‍👧‍👦<span>Family</span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="lp-campaign-box">
-      <div class="lp-progress-head">
-        <p class="lp-progress-label">Campaign Goal</p>
-        <p class="lp-progress-goal">$350,000</p>
-      </div>
-
-      <div class="lp-pct-row">
-        <span class="lp-pct-val" id="camp-pct">59%</span>
-        <span class="lp-pct-lbl">Funded</span>
-      </div>
-      <div class="lp-bar-track">
-        <div class="lp-bar-fill" id="camp-bar"></div>
-      </div>
-      <div class="lp-bar-labels">
-        <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
-      </div>
-
-      <div class="lp-amounts-row">
-        <div class="lp-amount raised">
-          <p class="lp-amount-val" id="camp-raised">$206,000</p>
-          <p class="lp-amount-lbl">Amount Raised</p>
-        </div>
-        <div class="lp-amount remaining">
-          <p class="lp-amount-val" id="camp-remaining">$144,000</p>
-          <p class="lp-amount-lbl">Remaining Need</p>
-        </div>
-      </div>
-
-      <button class="lp-donate-big" onclick="openModal()">
-        &#9829; Donate Now
-      </button>
-
-      <div class="lp-donate-options">
-        <div class="lp-donate-option">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="#e8a020">
-            <path d="M6.6 10.8c1.4-2.8 4.9-3.9 7.8-2.6C17 9.6 18 12 18 14h-2c0-1.5-.8-2.8-2-3.5v4.5L7 12l7 3v3l-7-7 7-3V4L6.6 10.8z"/>
-          </svg>
-          <span>Zelle: <strong>612-985-2768</strong></span>
-          <button class="lp-copy-btn" data-copy="612-985-2768" onclick="copyText(this)">Copy</button>
-        </div>
-        <div class="lp-donate-option">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="#e8a020">
-            <path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
-          </svg>
-          <span>GoFundMe: <strong>Search "IECC Masjid"</strong></span>
-        </div>
-      </div>
-
-      <p class="lp-tax-note">
-        🔒 IECC Masjid is a 501(c)(3) nonprofit. All donations are tax-deductible.
-      </p>
-    </div>
-
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════
-     CONTACT
-═══════════════════════════════════════════════════════ -->
-<section class="lp-contact" id="contact">
-  <div class="lp-section-inner lp-section-center">
-    <p class="lp-section-eyebrow">Find Us</p>
-    <h2 class="lp-section-h2">Get in Touch</h2>
-
-    <div class="lp-contact-grid">
-      <div class="lp-contact-card">
-        <div class="lp-contact-icon">📍</div>
-        <h3>Location</h3>
-        <p>4801 Welcome Ave North<br>Crystal, MN 55429</p>
-      </div>
-      <div class="lp-contact-card">
-        <div class="lp-contact-icon">📞</div>
-        <h3>Zelle / Phone</h3>
-        <p>612-985-2768<br>Enrolled as IECC Masjid</p>
-      </div>
-      <div class="lp-contact-card">
-        <div class="lp-contact-icon">📧</div>
-        <h3>Email</h3>
-        <p>iecc.masjid@gmail.com</p>
-      </div>
-      <div class="lp-contact-card">
-        <div class="lp-contact-icon">🕐</div>
-        <h3>Prayer Times</h3>
-        <p>Open for all 5 daily prayers.<br>Jumu'ah every Friday.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════
-     FOOTER
-═══════════════════════════════════════════════════════ -->
-<footer class="lp-footer">
-  <div class="lp-footer-inner">
-    <div class="lp-footer-logo">
-      <svg viewBox="0 0 60 60" width="36" height="36" fill="none">
-        <circle cx="30" cy="30" r="28" fill="#1a3d2a" stroke="#e8a020" stroke-width="2"/>
-        <path d="M18 34 Q30 16 42 34" fill="#e8a020"/>
-        <rect x="14" y="26" width="5" height="10" fill="#e8a020" rx="1"/>
-        <rect x="15.5" y="22" width="2" height="5" fill="#e8a020"/>
-        <rect x="41" y="26" width="5" height="10" fill="#e8a020" rx="1"/>
-        <rect x="42.5" y="22" width="2" height="5" fill="#e8a020"/>
-        <rect x="16" y="34" width="28" height="8" fill="#e8a020" rx="1"/>
-        <path d="M27 42 L27 37 Q30 34 33 37 L33 42 Z" fill="#1a3d2a"/>
-        <path d="M28.5 20 Q32 18 35 21 Q31 19 28.5 22 Z" fill="#fff"/>
-        <circle cx="34" cy="14" r="1.5" fill="#fff"/>
-      </svg>
+<!-- ── CAMPAIGN ──────────────────────────────────────── -->
+<section class="sc sc-dark" id="campaign">
+  <div class="sc-container">
+    <div class="lp-campaign" style="display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start">
       <div>
-        <p class="lp-footer-name">IECC Masjid</p>
-        <p class="lp-footer-sub">Islamic Education &amp; Cultural Center</p>
+        <span class="eyebrow eyebrow-gold">Building Campaign</span>
+        <h2 class="sc-h2 sc-h2-light" style="margin-bottom:14px">Help Complete Our Masjid</h2>
+        <p class="sc-lead light">Alhamdulillah! We've raised <strong style="color:#e8a020">$206,000</strong> of our <strong style="color:#e8a020">$350,000</strong> goal. Help us cross the finish line.</p>
+        <ul style="list-style:none;margin:20px 0 24px;display:flex;flex-direction:column;gap:8px">
+          <li style="font-size:.86rem;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:10px"><span style="width:20px;height:20px;border-radius:50%;background:#2d7e3a;display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:900;color:#fff;flex-shrink:0">✓</span>🔥 Fire Sprinkler System</li>
+          <li style="font-size:.86rem;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:10px"><span style="width:20px;height:20px;border-radius:50%;background:#2d7e3a;display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:900;color:#fff;flex-shrink:0">✓</span>🛡️ Safety & Occupancy</li>
+          <li style="font-size:.86rem;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:10px"><span style="width:20px;height:20px;border-radius:50%;background:#2d7e3a;display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:900;color:#fff;flex-shrink:0">✓</span>💧 Wudu Facilities</li>
+          <li style="font-size:.86rem;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:10px"><span style="width:20px;height:20px;border-radius:50%;background:#2d7e3a;display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:900;color:#fff;flex-shrink:0">✓</span>🏠 Interior Renovations</li>
+        </ul>
+        <a href="/donate.html" class="btn btn-gold">View Full Campaign</a>
+      </div>
+      <div style="background:rgba(255,255,255,.06);border:1px solid rgba(232,160,32,.28);border-radius:14px;padding:26px">
+        <p style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:3px">Campaign Goal</p>
+        <p style="font-size:2.3rem;font-weight:900;color:#e8a020;margin-bottom:12px">$350,000</p>
+        <div style="display:flex;align-items:baseline;gap:7px;margin-bottom:6px">
+          <span style="font-size:1.35rem;font-weight:900;color:#4caf6e">59%</span>
+          <span style="font-size:.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.45)">Funded</span>
+        </div>
+        <div style="height:16px;background:rgba(255,255,255,.1);border-radius:8px;overflow:hidden;margin-bottom:5px">
+          <div id="home-camp-bar" style="height:100%;width:0;background:linear-gradient(90deg,#1a5228,#2d7e3a,#4caf6e);border-radius:8px;transition:width 1.5s cubic-bezier(.3,.8,.3,1)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.56rem;color:rgba(255,255,255,.32);margin-bottom:18px"><span>0%</span><span>50%</span><span>100%</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+          <div style="background:rgba(46,126,58,.2);border:1px solid rgba(76,175,110,.22);border-radius:8px;padding:12px;text-align:center"><p style="font-size:1.2rem;font-weight:900;color:#fff">$206,000</p><p style="font-size:.54rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.42);margin-top:3px">Raised</p></div>
+          <div style="background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.22);border-radius:8px;padding:12px;text-align:center"><p style="font-size:1.2rem;font-weight:900;color:#fff">$144,000</p><p style="font-size:.54rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.42);margin-top:3px">Remaining</p></div>
+        </div>
+        <button onclick="openModal()" style="width:100%;background:#e8a020;color:#162c38;border:none;padding:15px;font-size:1rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;border-radius:7px;cursor:pointer;box-shadow:0 4px 18px rgba(232,160,32,.35)">&#9829; Donate Now</button>
+        <p style="font-size:.7rem;color:rgba(255,255,255,.36);text-align:center;margin-top:12px">🔒 501(c)(3) · All donations tax-deductible</p>
       </div>
     </div>
-
-    <div class="lp-footer-links">
-      <a href="#about">About</a>
-      <a href="#programs">Programs</a>
-      <a href="#campaign">Donate</a>
-      <a href="#contact">Contact</a>
-    </div>
-
-    <p class="lp-footer-copy">
-      &copy; 2026 IECC Masjid · Crystal, MN · 501(c)(3) Nonprofit · All donations tax-deductible
-    </p>
   </div>
-</footer>
+</section>
 
-<!-- ══════════════════════════════════════════════════════
-     DONATION MODAL
-═══════════════════════════════════════════════════════ -->
-<div class="modal-backdrop" id="modal-backdrop" onclick="handleBackdropClick(event)">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-
-    <div class="modal-header">
-      <div class="modal-title-block">
-        <span class="modal-heart">♥</span>
-        <div>
-          <h2 id="modal-title">Make Your Donation</h2>
-          <p class="modal-org">IECC Masjid · Crystal, MN</p>
-        </div>
-      </div>
-      <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+<!-- ── PROGRAMS ───────────────────────────────────────── -->
+<section class="sc sc-alt">
+  <div class="sc-container">
+    <div class="sc-hd center reveal">
+      <span class="eyebrow">What We Offer</span>
+      <h2 class="sc-h2">Programs &amp; Services</h2>
+      <p class="sc-lead center">From Quran classes to youth programs, IECC Masjid offers a full range of services for the whole community.</p>
     </div>
-
-    <div class="modal-section">
-      <p class="modal-label">Giving Frequency</p>
-      <div class="freq-toggle">
-        <button class="freq-btn active" data-freq="one-time" onclick="setFreq(this)">One Time</button>
-        <button class="freq-btn" data-freq="monthly" onclick="setFreq(this)">Monthly</button>
-      </div>
+    <div class="card-grid">
+      <div class="card reveal rd1"><div class="card-icon">🕋</div><h3>Daily Prayers</h3><p>Five daily congregational prayers led by our Imam, open to all.</p></div>
+      <div class="card reveal rd2"><div class="card-icon">📖</div><h3>Quran &amp; Islamic School</h3><p>Weekend classes for children and adults covering Quran, Arabic, and Aqeedah.</p></div>
+      <div class="card reveal rd3"><div class="card-icon">🧒</div><h3>Youth Programs</h3><p>After-school mentorship, Islamic studies, and social activities for teens.</p></div>
+      <div class="card reveal rd4"><div class="card-icon">👩</div><h3>Sisters' Circle</h3><p>Weekly halaqas, community events, and support for Muslim women.</p></div>
+      <div class="card reveal rd5"><div class="card-icon">🤝</div><h3>New Muslims Support</h3><p>Guidance, mentorship, and community for those new to Islam.</p></div>
+      <div class="card reveal"><div class="card-icon">🌙</div><h3>Community Events</h3><p>Eid celebrations, iftar gatherings, cultural events, and more throughout the year.</p></div>
     </div>
+    <div style="text-align:center;margin-top:32px"><a href="/programs.html" class="btn btn-outline-g">View All Programs</a></div>
+  </div>
+</section>
 
-    <div class="modal-section">
-      <p class="modal-label">Select Amount</p>
-      <div class="modal-amounts" id="modal-amounts"></div>
-      <div class="modal-custom">
-        <span class="custom-dollar">$</span>
-        <input type="number" id="custom-amt" placeholder="Other amount (min $100)" min="100"
-               oninput="handleCustomAmt(this)" />
-      </div>
+<!-- ── UPCOMING EVENTS ────────────────────────────────── -->
+<section class="sc">
+  <div class="sc-container">
+    <div class="sc-hd reveal" style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <div><span class="eyebrow">Community Calendar</span><h2 class="sc-h2">Upcoming Events</h2></div>
+      <a href="/events.html" class="btn btn-outline-g btn-sm">All Events →</a>
     </div>
-
-    <div class="modal-section">
-      <p class="modal-label">Payment Method</p>
-      <div class="pay-tabs">
-        <button class="pay-tab active" data-tab="zelle"  onclick="setPayTab(this)">Zelle</button>
-        <button class="pay-tab"        data-tab="paypal" onclick="setPayTab(this)">PayPal</button>
-        <button class="pay-tab"        data-tab="card"   onclick="setPayTab(this)">Card</button>
+    <div class="events-grid">
+      <div class="event-card reveal rd1">
+        <div class="edb"><div class="edb-month">FRI</div><div class="edb-day">Weekly</div></div>
+        <div class="ecb"><span class="ecat cat-religious">Religious</span><div class="etitle">Jumu'ah Prayer</div><div class="emeta"><div class="emeta-row">🕐 1:00 PM – 2:00 PM</div><div class="emeta-row">📍 IECC Masjid – Main Hall</div></div><a href="/events.html" class="btn btn-outline-g btn-sm" style="margin-top:auto">Learn More</a></div>
       </div>
-
-      <div class="pay-panel" id="panel-zelle">
-        <div class="pay-instruction">
-          <div class="pay-instr-icon">📱</div>
-          <div>
-            <p class="pay-instr-title">Send via Zelle to:</p>
-            <p class="pay-number">612-985-2768</p>
-            <p class="pay-note">Enrolled as: <strong>IECC Masjid</strong></p>
-            <p class="pay-note">In the memo write: <em>"Masjid Donation"</em></p>
-          </div>
-          <button class="instr-copy" data-copy="612-985-2768" onclick="copyText(this)">Copy</button>
-        </div>
-        <div class="pay-steps">
-          <p>1. Open your banking app and go to <strong>Zelle</strong></p>
-          <p>2. Send <strong id="zelle-amt-display">$100</strong> to <strong>612-985-2768</strong></p>
-          <p>3. Add memo: <em>Masjid Donation</em></p>
-        </div>
+      <div class="event-card reveal rd2">
+        <div class="edb"><div class="edb-month">JUL</div><div class="edb-day">19</div></div>
+        <div class="ecb"><span class="ecat cat-educational">Educational</span><div class="etitle">Islamic School Summer Registration</div><div class="emeta"><div class="emeta-row">🕐 10:00 AM – 2:00 PM</div><div class="emeta-row">📍 IECC Masjid</div></div><a href="/events.html" class="btn btn-outline-g btn-sm" style="margin-top:auto">Register</a></div>
       </div>
-
-      <div class="pay-panel hidden" id="panel-paypal">
-        <div class="paypal-panel-header">
-          <svg viewBox="0 0 80 21" xmlns="http://www.w3.org/2000/svg" height="22" aria-label="PayPal">
-            <path fill="#253B80" d="M9.5 3.7H4.8c-.4 0-.7.3-.8.6L2.2 15.5c0 .3.2.5.4.5H5c.3 0 .6-.2.6-.5l.6-3.8c.1-.4.4-.6.7-.6h1.8c3.6 0 5.7-1.7 6.2-5.2.2-1.5 0-2.7-.7-3.5-.7-.9-2-1.2-3.7-1.2zm.6 5.1c-.3 1.9-1.8 1.9-3.2 1.9h-.8l.6-3.6c0-.2.2-.4.4-.4h.4c1 0 1.9 0 2.3.6.3.3.4.8.3 1.5z"/>
-            <path fill="#179BD7" d="M26 8.6h-2.7c-.2 0-.4.2-.4.4l-.1.7-.2-.3c-.5-.8-1.7-1-3-1-2.7 0-5 2-5.4 4.8-.2 1.4.1 2.7.9 3.6.7.8 1.8 1.2 3.1 1.2 2.2 0 3.4-1.4 3.4-1.4l-.1.7c-.1.3.1.5.4.5h2.4c.3 0 .6-.2.7-.6l1.4-9.4c0-.2-.2-.4-.4-.2zm-3.7 4.7c-.3 1.3-1.3 2.2-2.7 2.2-.7 0-1.2-.2-1.6-.6-.3-.4-.5-1-.3-1.7.2-1.3 1.3-2.2 2.6-2.2.7 0 1.2.2 1.6.6.3.5.4 1.1.4 1.7z"/>
-            <path fill="#253B80" d="M38.7 8.6h-2.7c-.2 0-.5.1-.6.3l-3.7 5.4-1.6-5.2c-.1-.3-.4-.5-.7-.5H27c-.3 0-.5.3-.4.6l3 8.6-2.8 4c-.2.3 0 .7.4.7h2.7c.2 0 .5-.1.6-.3l9-13c.2-.3 0-.7-.4-.6-.1 0-.4-.3-.4-.6z"/>
-            <path fill="#179BD7" d="M48.5 3.7h-4.7c-.4 0-.7.3-.8.6L41.2 15.5c0 .3.2.5.4.5h2.9c.2 0 .5-.2.5-.4l.6-3.9c.1-.4.4-.6.7-.6h1.8c3.6 0 5.7-1.7 6.2-5.2.2-1.5 0-2.7-.7-3.5-.7-.9-2-1.2-3.7-1.2-.1 0-.4 0-.4.5z"/>
-          </svg>
-          <span class="paypal-panel-title">Secure PayPal Checkout</span>
-        </div>
-        <p class="paypal-panel-note">A PayPal window will open to complete your donation — you'll return to this page automatically when done.</p>
-        <div id="paypal-loading" class="paypal-loading-msg">
-          <span class="paypal-spinner"></span> Loading PayPal&hellip;
-        </div>
-        <div id="paypal-button-container"></div>
-      </div>
-
-      <div class="pay-panel hidden" id="panel-card">
-        <div class="card-form">
-          <div class="card-field full">
-            <label>Name on Card</label>
-            <input type="text" placeholder="Full name" autocomplete="cc-name" />
-          </div>
-          <div class="card-field full">
-            <label>Card Number</label>
-            <div class="card-input-wrap">
-              <input type="text" placeholder="1234 5678 9012 3456" maxlength="19"
-                     id="card-num" oninput="fmtCard(this)" autocomplete="cc-number" />
-              <span class="card-brand" id="card-brand"></span>
-            </div>
-          </div>
-          <div class="card-field half">
-            <label>Expiry</label>
-            <input type="text" placeholder="MM / YY" maxlength="7"
-                   oninput="fmtExpiry(this)" autocomplete="cc-exp" />
-          </div>
-          <div class="card-field half">
-            <label>CVV</label>
-            <input type="text" placeholder="123" maxlength="4" autocomplete="cc-csc" />
-          </div>
-          <div class="card-field full">
-            <label>Email (receipt)</label>
-            <input type="email" placeholder="your@email.com" autocomplete="email" />
-          </div>
-        </div>
-        <p class="card-secure">🔒 Secured &amp; encrypted. Your card info is never stored.</p>
+      <div class="event-card reveal rd3">
+        <div class="edb"><div class="edb-month">AUG</div><div class="edb-day">02</div></div>
+        <div class="ecb"><span class="ecat cat-fundraising">Fundraising</span><div class="etitle">Community Fundraising Dinner</div><div class="emeta"><div class="emeta-row">🕐 6:30 PM – 9:30 PM</div><div class="emeta-row">📍 Community Hall – Crystal, MN</div></div><a href="/events.html" class="btn btn-outline-g btn-sm" style="margin-top:auto">Get Tickets</a></div>
       </div>
     </div>
+  </div>
+</section>
 
-    <div class="modal-section" id="donor-info-section">
-      <p class="modal-label">Your Information <span class="optional">(optional)</span></p>
-      <div class="donor-fields">
-        <input type="text"  class="donor-input" placeholder="Your name" />
-        <input type="email" class="donor-input" placeholder="Email for confirmation" />
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <div class="modal-summary">
-        Donating <strong id="summary-amount">$100</strong>
-        <span id="summary-freq">· One Time</span>
-      </div>
-      <button class="modal-submit" id="modal-submit" onclick="handleSubmit()">
-        Donate <span id="submit-amount">$100</span>
-      </button>
-    </div>
-
+<!-- ── STATS ──────────────────────────────────────────── -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item reveal"><span class="stat-val">500+</span><span class="stat-lbl">Community Members</span></div>
+    <div class="stat-item reveal rd1"><span class="stat-val">8+</span><span class="stat-lbl">Programs Offered</span></div>
+    <div class="stat-item reveal rd2"><span class="stat-val">5</span><span class="stat-lbl">Daily Prayers</span></div>
+    <div class="stat-item reveal rd3"><span class="stat-val">2018</span><span class="stat-lbl">Year Founded</span></div>
   </div>
 </div>
 
-<!-- Confirmation -->
-<div class="modal-backdrop" id="confirm-backdrop" style="display:none">
-  <div class="modal confirm-modal">
-    <div class="confirm-icon">🕌</div>
-    <h2 class="confirm-title">JazakAllahu Khayran!</h2>
-    <p class="confirm-sub">May Allah accept your generous donation.</p>
-    <div class="confirm-detail" id="confirm-detail"></div>
-    <button class="modal-submit" onclick="closeConfirm()">Done</button>
+<!-- ── NEWSLETTER ─────────────────────────────────────── -->
+<div class="newsletter-band">
+  <div class="newsletter-inner">
+    <div class="newsletter-text"><h3>Stay Connected</h3><p>Get updates on prayer times, events, and community news.</p></div>
+    <form class="newsletter-form" id="newsletter-form">
+      <input class="nl-input" type="email" name="email" placeholder="Your email address" required/>
+      <button class="btn btn-gold" type="submit">Subscribe</button>
+    </form>
   </div>
 </div>
 
-<!-- Sticky donate button -->
-<button class="sticky-donate" onclick="openModal()" aria-label="Donate Now">
-  <span class="sticky-heart">♥</span>
-  <span class="sticky-text">DONATE NOW</span>
-</button>
-
-<div class="toast" id="toast">Copied!</div>
-
+<div id="footer-ph"></div>
+<div id="modal-ph"></div>
+<div class="toast" id="toast"></div>
 <script src="app.js"></script>
+<script src="site.js"></script>
 </body>
 </html>
