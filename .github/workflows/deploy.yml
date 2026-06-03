@@ -22,7 +22,7 @@ jobs:
       packages: write
 
     outputs:
-      image: ${{ steps.image.outputs.image }}
+      image: ${{ steps.image.outputs.image }}:latest
 
     steps:
       - name: Checkout repository
@@ -32,7 +32,8 @@ jobs:
         id: image
         shell: bash
         run: |
-          IMAGE="${REGISTRY}/${GITHUB_REPOSITORY,,}:latest"
+          # IMPORTANT: Do not include :latest here. docker/metadata-action adds tags later.
+          IMAGE="${REGISTRY}/${GITHUB_REPOSITORY,,}"
           echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
           echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
 
