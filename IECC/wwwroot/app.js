@@ -25,18 +25,24 @@ function fmt(n) {
 
 /* ── Flyer: progress bar ─────────────────────────────── */
 function renderProgress() {
-  const pct = Math.round((CAMPAIGN.raised / CAMPAIGN.goal) * 100);
-  document.getElementById('pct-val').textContent       = pct + '%';
-  document.getElementById('raised-val').textContent    = fmt(CAMPAIGN.raised);
-  document.getElementById('remaining-val').textContent = fmt(CAMPAIGN.goal - CAMPAIGN.raised);
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    document.getElementById('bar-fill').style.width = pct + '%';
+  const pct         = Math.round((CAMPAIGN.raised / CAMPAIGN.goal) * 100);
+  const pctEl       = document.getElementById('pct-val');
+  const raisedEl    = document.getElementById('raised-val');
+  const remainingEl = document.getElementById('remaining-val');
+  const barEl       = document.getElementById('bar-fill');
+  if (pctEl)       pctEl.textContent       = pct + '%';
+  if (raisedEl)    raisedEl.textContent    = fmt(CAMPAIGN.raised);
+  if (remainingEl) remainingEl.textContent = fmt(CAMPAIGN.goal - CAMPAIGN.raised);
+  if (barEl) requestAnimationFrame(() => requestAnimationFrame(() => {
+    barEl.style.width = pct + '%';
   }));
 }
 
 /* ── Flyer: needs list ───────────────────────────────── */
 function renderNeeds() {
-  document.getElementById('needs-list').innerHTML = NEEDS.map(n => `
+  const el = document.getElementById('needs-list');
+  if (!el) return;
+  el.innerHTML = NEEDS.map(n => `
     <li>
       <div class="need-check">✓</div>
       <span class="need-icon-sm">${n.icon}</span>
@@ -47,6 +53,7 @@ function renderNeeds() {
 
 function animateNeedItems() {
   const items = document.querySelectorAll('.needs-list li');
+  if (!items.length) return;
   const obs = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;

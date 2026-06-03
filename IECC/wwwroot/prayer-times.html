@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Prayer Times – IECC Masjid</title>
+  <meta name="description" content="Daily prayer times for IECC Masjid in Crystal, MN. Fajr, Dhuhr, Asr, Maghrib, and Isha times calculated for today."/>
+  <link rel="stylesheet" href="styles.css"/><link rel="stylesheet" href="site.css"/>
+</head>
+<body>
+<div id="nav-ph"></div>
+
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <span class="page-eye">Crystal, MN · ISNA Method</span>
+    <h1>Prayer Times</h1>
+    <p>Daily salah times calculated for Crystal, MN. Times vary throughout the year — check daily for accuracy.</p>
+  </div>
+</section>
+
+<!-- ── TODAY'S PRAYER STRIP ───────────────────────────── -->
+<div id="prayer-strip" class="prayer-strip"></div>
+
+<!-- ── TODAY'S PRAYER CARDS ──────────────────────────── -->
+<section class="sc sc-alt">
+  <div class="sc-container">
+    <div class="sc-hd center reveal">
+      <span class="eyebrow">Today's Schedule</span>
+      <h2 class="sc-h2" id="prayer-date-heading">Prayer Times</h2>
+      <p class="sc-lead center">The highlighted card is the current or next prayer. Times are auto-calculated for Crystal, MN (ISNA method, Fajr/Isha 15°).</p>
+    </div>
+    <div class="prayer-cards" id="prayer-cards"></div>
+  </div>
+</section>
+
+<!-- ── WEEKLY TABLE ───────────────────────────────────── -->
+<section class="sc">
+  <div class="sc-container">
+    <div class="sc-hd reveal">
+      <span class="eyebrow">7-Day Schedule</span>
+      <h2 class="sc-h2">This Week's Prayer Times</h2>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="pt-table" id="prayer-table">
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>🌙 Fajr</th>
+            <th>🌅 Sunrise</th>
+            <th>☀️ Dhuhr</th>
+            <th>🌤 Asr</th>
+            <th>🌇 Maghrib</th>
+            <th>🌃 Isha</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p style="font-size:.75rem;color:#4f6859;margin-top:10px;text-align:center">Times calculated using the ISNA method (Fajr &amp; Isha at 15°, Standard Asr). Crystal, MN (45.03°N, 93.35°W). DST is applied automatically.</p>
+  </div>
+</section>
+
+<!-- ── JUMU'AH ────────────────────────────────────────── -->
+<section class="sc sc-alt">
+  <div class="sc-container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+      <div class="reveal">
+        <span class="eyebrow">Every Friday</span>
+        <h2 class="sc-h2">Jumu'ah Prayer</h2>
+        <p style="font-size:.96rem;color:#4f6859;line-height:1.75;margin-bottom:16px">Join us every Friday for the Jumu'ah (Friday congregational prayer). The khutbah (sermon) begins at <strong>1:00 PM</strong>, followed by the prayer at approximately <strong>1:30 PM</strong>.</p>
+        <div style="background:#fff;border:1px solid var(--c-border);border-radius:12px;padding:20px;margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--c-border)"><span style="font-size:.84rem;font-weight:700;color:#1a1a1a">Khutbah begins</span><span style="font-size:.9rem;font-weight:800;color:#2d7e3a">1:00 PM</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--c-border)"><span style="font-size:.84rem;font-weight:700;color:#1a1a1a">Salah begins</span><span style="font-size:.9rem;font-weight:800;color:#2d7e3a">~1:30 PM</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0"><span style="font-size:.84rem;font-weight:700;color:#1a1a1a">Location</span><span style="font-size:.84rem;color:#4f6859">Main Prayer Hall</span></div>
+        </div>
+        <p style="font-size:.84rem;color:#4f6859;font-style:italic">Please arrive early for the khutbah. Wudu facilities available on site.</p>
+      </div>
+      <div class="reveal rd2">
+        <span class="eyebrow">Special Prayers</span>
+        <h2 class="sc-h2">Eid &amp; Tarawih</h2>
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-icon">🌙</div>
+          <h3>Eid ul-Fitr &amp; Eid ul-Adha</h3>
+          <p>Eid prayers are held at IECC Masjid. Times are announced based on moon sighting. Check our announcements for exact dates and times.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">✨</div>
+          <h3>Tarawih (Ramadan)</h3>
+          <p>Nightly Tarawih prayers during the blessed month of Ramadan. Schedule announced at the start of Ramadan each year.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── QIBLA INFO ──────────────────────────────────────── -->
+<section class="sc sc-dark">
+  <div class="sc-container" style="text-align:center">
+    <span class="eyebrow eyebrow-gold">Direction of Prayer</span>
+    <h2 class="sc-h2 sc-h2-light">Qibla Direction</h2>
+    <p class="sc-lead light center" style="margin-bottom:28px">From Crystal, MN, the Qibla direction is approximately <strong style="color:#e8a020">53° North-East</strong> (true north bearing).</p>
+    <div style="display:inline-flex;align-items:center;gap:16px;background:rgba(255,255,255,.07);border:1px solid rgba(232,160,32,.25);border-radius:12px;padding:20px 32px">
+      <div style="text-align:center"><div style="font-size:2.5rem;margin-bottom:4px">🧭</div><div style="font-size:.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5)">Qibla</div><div style="font-size:1.3rem;font-weight:900;color:#e8a020">~53° NE</div></div>
+      <div style="width:1px;height:60px;background:rgba(255,255,255,.15)"></div>
+      <div style="text-align:center"><div style="font-size:2.5rem;margin-bottom:4px">📍</div><div style="font-size:.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5)">Location</div><div style="font-size:1rem;font-weight:700;color:#fff">Crystal, MN</div></div>
+      <div style="width:1px;height:60px;background:rgba(255,255,255,.15)"></div>
+      <div style="text-align:center"><div style="font-size:2.5rem;margin-bottom:4px">🕋</div><div style="font-size:.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5)">Distance</div><div style="font-size:1rem;font-weight:700;color:#fff">~6,900 miles</div></div>
+    </div>
+  </div>
+</section>
+
+<div id="footer-ph"></div>
+<div id="modal-ph"></div>
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+<script src="site.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date();
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const h = document.getElementById('prayer-date-heading');
+    if (h) h.textContent = `${days[today.getDay()]}, ${months[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`;
+  });
+</script>
+</body>
+</html>

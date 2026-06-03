@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Donate – IECC Masjid Building Campaign</title>
+  <meta name="description" content="Donate to complete IECC Masjid in Crystal, MN. Help raise the remaining $144,000 needed for sprinklers, wudu facilities, and occupancy requirements."/>
+  <link rel="stylesheet" href="styles.css"/><link rel="stylesheet" href="site.css"/>
+</head>
+<body>
+<div id="nav-ph"></div>
+
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <span class="page-eye">501(c)(3) · Tax Deductible</span>
+    <h1>Support Our Masjid</h1>
+    <p>Alhamdulillah — we've raised $206,000. Help us reach our $350,000 goal and open the doors for generations to come.</p>
+    <div style="background:rgba(255,255,255,.07);border:1px solid rgba(232,160,32,.28);border-radius:12px;padding:18px 22px;margin-top:22px;max-width:400px;margin-left:auto;margin-right:auto">
+      <p style="font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.42);margin-bottom:3px">Campaign Progress</p>
+      <p style="font-size:1.8rem;font-weight:900;color:#e8a020;margin-bottom:10px">$206,000 raised</p>
+      <div style="height:12px;background:rgba(255,255,255,.1);border-radius:6px;overflow:hidden;margin-bottom:6px">
+        <div id="hero-prog-bar" style="height:100%;width:0;background:linear-gradient(90deg,#1a5228,#2d7e3a,#4caf6e);border-radius:6px;transition:width 1.5s cubic-bezier(.3,.8,.3,1)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:.7rem;color:rgba(255,255,255,.45);font-weight:600"><span>59% funded</span><span>Goal: $350,000</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── IMPACT ──────────────────────────────────────────── -->
+<section class="sc sc-alt">
+  <div class="sc-container">
+    <div class="sc-hd center reveal">
+      <span class="eyebrow">Your Impact</span>
+      <h2 class="sc-h2">Every Dollar Counts</h2>
+      <p class="sc-lead center">Here's what your donation directly funds at IECC Masjid:</p>
+    </div>
+    <div class="impact-grid">
+      <div class="impact-card reveal rd1"><div class="impact-amt">$50</div><div class="impact-desc">Covers one day of utilities &amp; maintenance for the Masjid</div></div>
+      <div class="impact-card reveal rd2"><div class="impact-amt">$250</div><div class="impact-desc">Funds one section of the fire sprinkler installation</div></div>
+      <div class="impact-card reveal rd3"><div class="impact-amt">$1,000</div><div class="impact-desc">Completes a full wudu station for brothers or sisters</div></div>
+      <div class="impact-card reveal rd4"><div class="impact-amt">$5,000</div><div class="impact-desc">Covers one major occupancy requirement — helping open the doors</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DONATION FORM + OPTIONS ────────────────────────── -->
+<section class="sc">
+  <div class="sc-container">
+    <div class="donate-layout">
+
+      <!-- Left: Donation form -->
+      <div>
+        <div class="sc-hd reveal">
+          <span class="eyebrow">Give Online</span>
+          <h2 class="sc-h2">Make Your Donation</h2>
+        </div>
+        <div class="donate-box reveal">
+          <h3>Select Your Amount</h3>
+          <div class="d-freq">
+            <button class="d-freq-btn active">One Time</button>
+            <button class="d-freq-btn">Monthly</button>
+          </div>
+          <div class="d-amounts">
+            <button class="d-amt-btn" data-amount="50">$50</button>
+            <button class="d-amt-btn selected" data-amount="100">$100</button>
+            <button class="d-amt-btn" data-amount="250">$250</button>
+            <button class="d-amt-btn" data-amount="500">$500</button>
+            <button class="d-amt-btn" data-amount="1000">$1,000</button>
+            <button class="d-amt-btn" data-amount="5000">$5,000</button>
+          </div>
+          <div class="d-custom">
+            <span class="d-custom-sym">$</span>
+            <input type="number" id="d-custom-inp" placeholder="Custom amount" min="1"/>
+          </div>
+          <button id="d-submit-btn" onclick="openModal()" class="btn btn-gold btn-full btn-lg" style="margin-bottom:14px">&#9829; Donate $100 via PayPal / Card</button>
+          <p style="font-size:.72rem;color:#4f6859;text-align:center">🔒 Secure checkout · 501(c)(3) · Tax receipt emailed automatically</p>
+        </div>
+      </div>
+
+      <!-- Right: Other ways to give -->
+      <div class="reveal rd2">
+        <div class="sc-hd"><span class="eyebrow">Other Ways to Give</span><h2 class="sc-h2">Zelle &amp; More</h2></div>
+
+        <div style="background:#fff;border:1px solid var(--c-border);border-radius:12px;padding:20px;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <span style="font-size:1.5rem">💸</span>
+            <div><div style="font-size:.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#e8a020;margin-bottom:2px">Zelle</div><div style="font-size:1.3rem;font-weight:900;color:#1a1a1a">612-985-2768</div></div>
+            <button onclick="navigator.clipboard.writeText('612-985-2768').then(()=>{if(typeof showToast==='function')showToast('Copied: 612-985-2768')})" style="margin-left:auto;background:transparent;border:1px solid var(--c-gold);color:var(--c-gold);padding:5px 12px;border-radius:4px;font-size:.65rem;font-weight:700;text-transform:uppercase;cursor:pointer">Copy</button>
+          </div>
+          <p style="font-size:.82rem;color:#4f6859">Enrolled as: <strong>IECC Masjid</strong><br>Memo: <em>Masjid Donation</em></p>
+        </div>
+
+        <div style="background:#fff;border:1px solid var(--c-border);border-radius:12px;padding:20px;margin-bottom:16px">
+          <div style="font-size:.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#02a95c;margin-bottom:8px">GoFundMe</div>
+          <p style="font-size:.88rem;font-weight:700;color:#1a1a1a;margin-bottom:4px">Search "IECC Masjid"</p>
+          <p style="font-size:.82rem;color:#4f6859">Or visit our GoFundMe page directly from any browser.</p>
+        </div>
+
+        <div style="background:#fff;border:1px solid var(--c-border);border-radius:12px;padding:20px;margin-bottom:16px">
+          <div style="font-size:.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#162c38;margin-bottom:8px">Check / Money Order</div>
+          <p style="font-size:.88rem;color:#1a1a1a;margin-bottom:4px">Payable to: <strong>IECC Masjid</strong></p>
+          <p style="font-size:.82rem;color:#4f6859">4801 Welcome Ave North<br>Crystal, MN 55429</p>
+        </div>
+
+        <div style="background:#1a3d28;border-radius:12px;padding:18px">
+          <div style="font-size:.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#e8a020;margin-bottom:8px">Corporate Sponsorship</div>
+          <p style="font-size:.84rem;color:rgba(255,255,255,.75);margin-bottom:12px">Businesses can make a tax-deductible corporate donation. Contact us for sponsorship packages and recognition opportunities.</p>
+          <a href="/contact.html" class="btn btn-outline-w btn-sm">Contact for Corporate Giving →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── NEEDS ───────────────────────────────────────────── -->
+<section class="sc sc-alt">
+  <div class="sc-container">
+    <div class="sc-hd center reveal"><span class="eyebrow">Where Your Money Goes</span><h2 class="sc-h2">Current Project Needs</h2></div>
+    <div class="card-grid">
+      <div class="card reveal rd1"><div class="card-icon">🔥</div><h3>Fire Sprinkler System</h3><p>Required by city code before the building can be opened to the public for congregational use. Estimated cost: $45,000.</p></div>
+      <div class="card reveal rd2"><div class="card-icon">🛡️</div><h3>Safety &amp; Occupancy</h3><p>Finalize all safety inspections, emergency exits, signage, and occupancy permits required by Crystal, MN.</p></div>
+      <div class="card reveal rd3"><div class="card-icon">💧</div><h3>Wudu Facilities</h3><p>Install dedicated wudu stations for brothers and sisters — a fundamental requirement for prayer at the Masjid.</p></div>
+      <div class="card reveal rd4"><div class="card-icon">⚡</div><h3>Electrical Upgrades</h3><p>Update the electrical system to support lighting, HVAC, and sound systems throughout the prayer hall.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ────────────────────────────────────────────── -->
+<section class="sc">
+  <div class="sc-container">
+    <div class="sc-hd center reveal"><span class="eyebrow">Questions</span><h2 class="sc-h2">Donation FAQ</h2></div>
+    <div class="faq-list reveal" style="max-width:720px;margin:0 auto">
+      <div class="faq-item"><button class="faq-q">Is my donation tax-deductible?</button><div class="faq-a">Yes! IECC Masjid is a registered 501(c)(3) nonprofit organization. All donations are tax-deductible to the fullest extent of the law. You will receive a PDF receipt by email for your records.</div></div>
+      <div class="faq-item"><button class="faq-q">How do I get a donation receipt?</button><div class="faq-a">For PayPal and card donations, a receipt is automatically emailed after your transaction is captured. For Zelle donations, please email us at iecc.masjid@gmail.com with your name, date, and amount and we'll send you a receipt.</div></div>
+      <div class="faq-item"><button class="faq-q">Can I set up a monthly donation?</button><div class="faq-a">Absolutely. Select "Monthly" before choosing your amount. Monthly donors are the backbone of our campaign. You can cancel at any time by contacting us.</div></div>
+      <div class="faq-item"><button class="faq-q">Can I donate in honor of someone?</button><div class="faq-a">Yes — you can dedicate your donation in honor or in memory of a loved one. Please include the name in the PayPal notes or send us an email after completing your Zelle donation.</div></div>
+      <div class="faq-item"><button class="faq-q">What happens after the goal is reached?</button><div class="faq-a">Once the building is complete and open, ongoing donations fund daily operations, programs, staff, and future expansion — all in service of the community.</div></div>
+    </div>
+  </div>
+</section>
+
+<div id="footer-ph"></div>
+<div id="modal-ph"></div>
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+<script src="site.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const bar = document.getElementById('hero-prog-bar');
+    if (bar) requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = '59%'; }));
+    const amtBtns = document.querySelectorAll('.d-amt-btn');
+    const submitBtn = document.getElementById('d-submit-btn');
+    amtBtns.forEach(b => b.addEventListener('click', () => {
+      amtBtns.forEach(x => x.classList.remove('selected'));
+      b.classList.add('selected');
+      if (submitBtn) submitBtn.textContent = `♥ Donate $${Number(b.dataset.amount).toLocaleString()} via PayPal / Card`;
+      document.getElementById('d-custom-inp').value = '';
+    }));
+    document.getElementById('d-custom-inp')?.addEventListener('input', e => {
+      const v = e.target.value;
+      if (v > 0 && submitBtn) {
+        amtBtns.forEach(x => x.classList.remove('selected'));
+        submitBtn.textContent = `♥ Donate $${Number(v).toLocaleString()} via PayPal / Card`;
+      }
+    });
+  });
+</script>
+</body>
+</html>
