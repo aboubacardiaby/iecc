@@ -1,0 +1,90 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+  deploy:
+    name: Deploy to VPS
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
+          PAYPAL_CLIENT_SECRET: ${{ secrets.PAYPAL_CLIENT_SECRET }}
+          PAYPAL_MODE: ${{ secrets.PAYPAL_MODE }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM_EMAIL: ${{ secrets.SMTP_FROM_EMAIL }}
+          GHCR_PAT: ${{ secrets.GHCR_PAT }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          IMAGE: ghcr.io/${{ github.repository }}:latest
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: PAYPAL_CLIENT_ID,PAYPAL_CLIENT_SECRET,PAYPAL_MODE,SMTP_USERNAME,SMTP_PASSWORD,SMTP_FROM_EMAIL,GHCR_PAT,GITHUB_ACTOR,IMAGE
+          script: |
+            echo "$GHCR_PAT" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+            docker pull "$IMAGE"
+            docker stop iecc || true
+            docker rm iecc || true
+            docker run -d \
+              --name iecc \
+              --restart unless-stopped \
+              -p 127.0.0.1:5000:8080 \
+              -e ASPNETCORE_ENVIRONMENT=Production \
+              -e PayPal__ClientId="$PAYPAL_CLIENT_ID" \
+              -e PayPal__ClientSecret="$PAYPAL_CLIENT_SECRET" \
+              -e PayPal__Mode="$PAYPAL_MODE" \
+              -e Smtp__Host=smtp.gmail.com \
+              -e Smtp__Port=587 \
+              -e Smtp__Username="$SMTP_USERNAME" \
+              -e Smtp__Password="$SMTP_PASSWORD" \
+              -e Smtp__FromName="IECC Masjid" \
+              -e Smtp__FromEmail="$SMTP_FROM_EMAIL" \
+              "$IMAGE"
+            docker image prune -f
