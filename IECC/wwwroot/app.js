@@ -343,9 +343,57 @@ document.addEventListener('keydown', e => {
   }
 });
 
+/* ── Landing page: campaign progress bar ─────────────── */
+function renderCampaignBar() {
+  const pct = Math.round((CAMPAIGN.raised / CAMPAIGN.goal) * 100);
+
+  const campBar       = document.getElementById('camp-bar');
+  const campPct       = document.getElementById('camp-pct');
+  const campRaised    = document.getElementById('camp-raised');
+  const campRemaining = document.getElementById('camp-remaining');
+  const heroPct       = document.getElementById('hero-pct');
+  const heroRaised    = document.getElementById('hero-raised');
+
+  if (campPct)       campPct.textContent       = pct + '%';
+  if (campRaised)    campRaised.textContent     = fmt(CAMPAIGN.raised);
+  if (campRemaining) campRemaining.textContent  = fmt(CAMPAIGN.goal - CAMPAIGN.raised);
+  if (heroPct)       heroPct.textContent        = pct + '%';
+  if (heroRaised)    heroRaised.textContent     = fmt(CAMPAIGN.raised);
+
+  if (campBar) {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      campBar.style.width = pct + '%';
+    }));
+  }
+}
+
+/* ── Nav toggle (mobile) ─────────────────────────────── */
+function closeNav() {
+  document.getElementById('nav-links')?.classList.remove('open');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('nav-toggle');
+  const links  = document.getElementById('nav-links');
+  if (toggle && links) {
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+  }
+
+  // Shrink nav on scroll
+  const nav = document.getElementById('lp-nav');
+  if (nav) {
+    window.addEventListener('scroll', () => {
+      nav.style.background = window.scrollY > 40
+        ? 'rgba(22,44,56,0.99)'
+        : 'rgba(22,44,56,0.96)';
+    }, { passive: true });
+  }
+});
+
 /* ── Boot ────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   renderProgress();
   renderNeeds();
   animateNeedItems();
+  renderCampaignBar();
 });
