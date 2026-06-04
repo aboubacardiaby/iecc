@@ -109,6 +109,11 @@ jobs:
           script: |
             set -e
 
+            # ── Validate required secrets ───────────────────
+            : "${IMAGE:?IMAGE is empty — build job failed}"
+            : "${GHCR_PAT:?GHCR_PAT secret is not set}"
+            : "${DB_PASSWORD:?DB_PASSWORD secret is not set — add it in GitHub repo Settings → Secrets}"
+
             # ── Docker network ──────────────────────────────
             docker network create iecc-net 2>/dev/null || true
 
