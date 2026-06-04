@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Events – IECC Admin</title>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+<div class="al">
+  <div id="sb-ph"></div>
+  <div class="am">
+    <header class="ah">
+      <h1 class="page-title">Events</h1>
+      <div class="hdr-right"><span class="hdr-user"><strong id="admin-username"></strong></span><button class="btn-logout" onclick="logout()">Logout</button></div>
+    </header>
+    <main class="ac">
+      <div class="tcard">
+        <div class="tcard-hd">
+          <span class="tcard-title">All Events</span>
+          <div class="tcard-acts">
+            <input class="fi" id="search" placeholder="Search title…" oninput="filterTable()"/>
+            <select class="fs" id="f-cat" onchange="filterTable()"><option value="">All Categories</option><option>religious</option><option>educational</option><option>social</option><option>fundraising</option></select>
+            <button class="btn btn-primary" onclick="openEventModal()">+ Add Event</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="at">
+            <thead><tr><th>Date</th><th>Title</th><th>Category</th><th>Time</th><th>Location</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="e-tbody"><tr><td colspan="7" style="padding:24px;text-align:center;color:#94a3b8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+        <div style="padding:12px 16px;font-size:.78rem;color:#94a3b8;border-top:1px solid #e2e8f0" id="row-count"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="moverlay" id="event-modal" onclick="if(event.target===this)closeEventModal()">
+  <div class="mbox">
+    <div class="mhd"><h3 id="modal-title">Add Event</h3><button class="mclose" onclick="closeEventModal()">&times;</button></div>
+    <div class="mbody">
+      <input type="hidden" id="event-id"/>
+      <div class="fg"><label class="fl">Title *</label><input class="fi2" id="e-title" required/></div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Category *</label><select class="fs2" id="e-cat"><option value="religious">Religious</option><option value="educational">Educational</option><option value="social">Social</option><option value="fundraising">Fundraising</option></select></div>
+        <div class="fg"><label class="fl">Date *</label><input class="fi2" type="date" id="e-date" required/></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Start Time</label><input class="fi2" type="time" id="e-start"/></div>
+        <div class="fg"><label class="fl">End Time</label><input class="fi2" type="time" id="e-end"/></div>
+      </div>
+      <div class="fg"><label class="fl">Location</label><input class="fi2" id="e-loc" placeholder="e.g. IECC Masjid – Main Hall"/></div>
+      <div class="fg"><label class="fl">Description</label><textarea class="fta" id="e-desc" rows="3"></textarea></div>
+      <div class="fg"><label class="fchk"><input type="checkbox" id="e-pub" checked/> Published (visible on public site)</label></div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-secondary" onclick="closeEventModal()">Cancel</button>
+      <button class="btn btn-primary" id="modal-save" onclick="saveEvent()">Save Event</button>
+    </div>
+  </div>
+</div>
+
+<script src="admin.js"></script>
+<script>
+let allEvents=[],editingId=null;
+document.addEventListener('DOMContentLoaded', async()=>{ if(!await requireAuth()) return; await loadEvents(); });
+async function loadEvents(){allEvents=await apiGet('/admin/api/events')||[];filterTable();}
+function render(rows){
+  document.getElementById('e-tbody').innerHTML=rows.length
+    ?rows.map(e=>`<tr><td style="white-space:nowrap;font-weight:600">${e.eventDate}</td><td style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.title)}</td><td>${badge(e.category,e.category)}</td><td style="white-space:nowrap;color:#64748b">${e.startTime?fmtTime(e.startTime):'—'}${e.endTime?' – '+fmtTime(e.endTime):''}</td><td class="trunc" style="color:#64748b">${esc(e.location)||'—'}</td><td>${e.isPublished?badge('Published','published'):badge('Draft','draft')}</td><td><div style="display:flex;gap:6px"><button class="btn btn-secondary btn-sm" onclick="editEvent('${e.id}')">Edit</button><button class="btn btn-danger btn-sm" onclick="deleteEvent('${e.id}','${esc(e.title).replace(/'/g,"\\'")}',this)">Delete</button></div></td></tr>`).join('')
+    :`<tr><td colspan="7"><div class="empty"><div class="empty-icon">📅</div><div class="empty-text">No events found</div></div></td></tr>`;
+  document.getElementById('row-count').textContent=`${rows.length} event${rows.length!==1?'s':''}`;
+}
+function filterTable(){const q=document.getElementById('search').value.toLowerCase(),cat=document.getElementById('f-cat').value;render(allEvents.filter(e=>(!q||e.title.toLowerCase().includes(q))&&(!cat||e.category===cat)));}
+function openEventModal(ev){editingId=ev?.id||null;document.getElementById('modal-title').textContent=ev?'Edit Event':'Add Event';document.getElementById('event-id').value=ev?.id||'';document.getElementById('e-title').value=ev?.title||'';document.getElementById('e-cat').value=ev?.category||'religious';document.getElementById('e-date').value=ev?.eventDate||'';document.getElementById('e-start').value=ev?.startTime?.substring(0,5)||'';document.getElementById('e-end').value=ev?.endTime?.substring(0,5)||'';document.getElementById('e-loc').value=ev?.location||'';document.getElementById('e-desc').value=ev?.description||'';document.getElementById('e-pub').checked=ev?.isPublished!==false;openModal('event-modal');document.getElementById('e-title').focus();}
+function closeEventModal(){closeModal('event-modal');editingId=null;}
+function editEvent(id){const ev=allEvents.find(e=>e.id===id);if(ev)openEventModal(ev);}
+async function saveEvent(){
+  const title=document.getElementById('e-title').value.trim(),date=document.getElementById('e-date').value;
+  if(!title||!date){adminToast('Title and date are required','error');return;}
+  const btn=document.getElementById('modal-save');btn.disabled=true;btn.textContent='Saving…';
+  const payload={title,category:document.getElementById('e-cat').value,eventDate:date,startTime:document.getElementById('e-start').value||null,endTime:document.getElementById('e-end').value||null,location:document.getElementById('e-loc').value.trim()||null,description:document.getElementById('e-desc').value.trim()||null,isPublished:document.getElementById('e-pub').checked};
+  const r=editingId?await apiPut(`/admin/api/events/${editingId}`,payload):await apiPost('/admin/api/events',payload);
+  btn.disabled=false;btn.textContent='Save Event';
+  if(r!==null){closeEventModal();await loadEvents();adminToast(editingId?'Event updated':'Event created');}
+}
+async function deleteEvent(id,title,btn){if(!confirm(`Delete "${title}"?`))return;btn.disabled=true;const r=await apiDelete(`/admin/api/events/${id}`);if(r!==null){allEvents=allEvents.filter(e=>e.id!==id);filterTable();adminToast('Event deleted');}else btn.disabled=false;}
+</script>
+</body>
+</html>

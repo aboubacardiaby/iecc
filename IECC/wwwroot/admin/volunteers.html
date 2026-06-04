@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Volunteers – IECC Admin</title>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+<div class="al">
+  <div id="sb-ph"></div>
+  <div class="am">
+    <header class="ah">
+      <h1 class="page-title">Volunteer Applications</h1>
+      <div class="hdr-right"><span class="hdr-user"><strong id="admin-username"></strong></span><button class="btn-logout" onclick="logout()">Logout</button></div>
+    </header>
+    <main class="ac">
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:18px">
+        <div class="sc"><div><div class="sc-val" id="s-total">–</div><div class="sc-lbl">Total</div></div><div class="sc-icon">👥</div></div>
+        <div class="sc"><div><div class="sc-val" id="s-pending">–</div><div class="sc-lbl">Pending</div></div><div class="sc-icon">⏳</div></div>
+        <div class="sc"><div><div class="sc-val" id="s-contacted">–</div><div class="sc-lbl">Contacted</div></div><div class="sc-icon">📞</div></div>
+        <div class="sc"><div><div class="sc-val" id="s-active">–</div><div class="sc-lbl">Active</div></div><div class="sc-icon">✅</div></div>
+      </div>
+      <div class="tcard">
+        <div class="tcard-hd">
+          <span class="tcard-title">Applications</span>
+          <div class="tcard-acts">
+            <input class="fi" id="search" placeholder="Search name / email / role…" oninput="filterTable()"/>
+            <select class="fs" id="f-status" onchange="filterTable()"><option value="">All Statuses</option><option>pending</option><option>contacted</option><option>active</option></select>
+            <button class="btn btn-gold btn-sm" onclick="exportData()">⬇ Export CSV</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="at">
+            <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Availability</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="v-tbody"><tr><td colspan="8" style="padding:24px;text-align:center;color:#94a3b8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+        <div style="padding:12px 16px;font-size:.78rem;color:#94a3b8;border-top:1px solid #e2e8f0" id="row-count"></div>
+      </div>
+    </main>
+  </div>
+</div>
+<script src="admin.js"></script>
+<script>
+let allVolunteers=[];
+document.addEventListener('DOMContentLoaded', async()=>{ if(!await requireAuth()) return; allVolunteers=await apiGet('/admin/api/volunteers')||[]; updateStats(); render(allVolunteers); });
+function updateStats(){document.getElementById('s-total').textContent=allVolunteers.length;document.getElementById('s-pending').textContent=allVolunteers.filter(v=>v.status==='pending').length;document.getElementById('s-contacted').textContent=allVolunteers.filter(v=>v.status==='contacted').length;document.getElementById('s-active').textContent=allVolunteers.filter(v=>v.status==='active').length;}
+function render(rows){
+  document.getElementById('v-tbody').innerHTML=rows.length
+    ?rows.map(v=>`<tr><td style="white-space:nowrap">${fmtDate(v.createdAt)}</td><td style="font-weight:600">${esc(v.name)}</td><td style="color:#64748b">${esc(v.email)}</td><td style="color:#64748b">${esc(v.phone)||'—'}</td><td class="trunc">${esc(v.role)}</td><td style="color:#64748b">${esc(v.availability)||'—'}</td><td>${badge(v.status)}</td>
+      <td><div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${v.status==='pending'?`<button class="btn btn-primary btn-xs" onclick="setStatus('${v.id}','contacted',this)">Contact</button>`:''}
+        ${v.status==='contacted'?`<button class="btn btn-primary btn-xs" onclick="setStatus('${v.id}','active',this)">Activate</button>`:''}
+        ${v.status==='active'?`<button class="btn btn-secondary btn-xs" onclick="setStatus('${v.id}','contacted',this)">Deactivate</button>`:''}
+        ${v.status!=='pending'?`<button class="btn btn-secondary btn-xs" onclick="setStatus('${v.id}','pending',this)">Reset</button>`:''}
+        <a href="mailto:${esc(v.email)}" class="btn btn-secondary btn-xs">✉</a>
+      </div></td></tr>`).join('')
+    :`<tr><td colspan="8"><div class="empty"><div class="empty-icon">🤝</div><div class="empty-text">No volunteers match</div></div></td></tr>`;
+  document.getElementById('row-count').textContent=`${rows.length} application${rows.length!==1?'s':''}`;
+}
+function filterTable(){const q=document.getElementById('search').value.toLowerCase(),fs=document.getElementById('f-status').value;render(allVolunteers.filter(v=>(!q||(v.name||'').toLowerCase().includes(q)||(v.email||'').toLowerCase().includes(q)||(v.role||'').toLowerCase().includes(q))&&(!fs||v.status===fs)));}
+async function setStatus(id,status,btn){btn.disabled=true;const r=await apiPatch(`/admin/api/volunteers/${id}/status`,{status});if(!r){btn.disabled=false;return;}const v=allVolunteers.find(x=>x.id===id);if(v)v.status=r.status;updateStats();filterTable();adminToast(`Status → ${status}`);}
+function exportData(){exportCSV(allVolunteers.map(v=>({Date:fmtDate(v.createdAt),Name:v.name,Email:v.email,Phone:v.phone||'',Role:v.role,Availability:v.availability||'',Status:v.status})),'volunteers.csv');}
+</script>
+</body>
+</html>

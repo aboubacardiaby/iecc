@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Contacts – IECC Admin</title>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+<div class="al">
+  <div id="sb-ph"></div>
+  <div class="am">
+    <header class="ah">
+      <h1 class="page-title">Contact Submissions</h1>
+      <div class="hdr-right"><span class="hdr-user"><strong id="admin-username"></strong></span><button class="btn-logout" onclick="logout()">Logout</button></div>
+    </header>
+    <main class="ac">
+      <div class="tcard">
+        <div class="tcard-hd">
+          <span class="tcard-title">Messages</span>
+          <div class="tcard-acts">
+            <input class="fi" id="search" placeholder="Search name / email / subject…" oninput="filterTable()"/>
+            <select class="fs" id="f-status" onchange="filterTable()"><option value="">All</option><option value="unresolved">Unresolved</option><option value="resolved">Resolved</option></select>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="at">
+            <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Subject</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="c-tbody"><tr><td colspan="6" style="padding:24px;text-align:center;color:#94a3b8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+        <div style="padding:12px 16px;font-size:.78rem;color:#94a3b8;border-top:1px solid #e2e8f0" id="row-count"></div>
+      </div>
+    </main>
+  </div>
+</div>
+<script src="admin.js"></script>
+<script>
+let allContacts=[],expanded=null;
+document.addEventListener('DOMContentLoaded', async()=>{ if(!await requireAuth()) return; allContacts=await apiGet('/admin/api/contacts')||[]; render(allContacts); });
+function render(rows){
+  const tbody=document.getElementById('c-tbody');
+  if(!rows.length){tbody.innerHTML=`<tr><td colspan="6"><div class="empty"><div class="empty-icon">📧</div><div class="empty-text">No messages match</div></div></td></tr>`;document.getElementById('row-count').textContent='';return;}
+  tbody.innerHTML=rows.map(c=>`
+    <tr class="contact-row" onclick="toggleExpand('${c.id}')" style="cursor:pointer">
+      <td style="white-space:nowrap">${fmtDate(c.createdAt)}</td><td style="font-weight:600">${esc(c.name)}</td>
+      <td style="color:#64748b">${esc(c.email)}</td><td class="trunc">${esc(c.subject)||'<em style="color:#94a3b8">No subject</em>'}</td>
+      <td>${c.isResolved?badge('Resolved','resolved'):badge('Unresolved','unresolved')}</td>
+      <td onclick="event.stopPropagation()"><button class="btn btn-sm ${c.isResolved?'btn-secondary':'btn-primary'}" onclick="toggleResolve('${c.id}',this)">${c.isResolved?'Unresolve':'Resolve'}</button></td>
+    </tr>
+    <tr id="exp-${c.id}" style="display:none"><td class="expand-td" colspan="6"><strong>From:</strong> ${esc(c.name)} &lt;${esc(c.email)}&gt;${c.phone?` · ${esc(c.phone)}`:''}<br><strong>Subject:</strong> ${esc(c.subject)||'(none)'}<br><br>${esc(c.message)}</td></tr>`).join('');
+  document.getElementById('row-count').textContent=`${rows.length} message${rows.length!==1?'s':''}`;
+}
+function toggleExpand(id){const row=document.getElementById(`exp-${id}`);if(!row)return;const open=row.style.display!=='none';if(expanded&&expanded!==id){const p=document.getElementById(`exp-${expanded}`);if(p)p.style.display='none';}row.style.display=open?'none':'table-row';expanded=open?null:id;}
+function filterTable(){const q=document.getElementById('search').value.toLowerCase(),fs=document.getElementById('f-status').value;render(allContacts.filter(c=>(!q||(c.name||'').toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q)||(c.subject||'').toLowerCase().includes(q))&&(!fs||(fs==='resolved'?c.isResolved:!c.isResolved))));}
+async function toggleResolve(id,btn){btn.disabled=true;const r=await apiPatch(`/admin/api/contacts/${id}/resolve`);if(!r){btn.disabled=false;return;}const c=allContacts.find(x=>x.id===id);if(c)c.isResolved=r.isResolved;filterTable();adminToast(r.isResolved?'Marked resolved':'Marked unresolved');}
+</script>
+</body>
+</html>

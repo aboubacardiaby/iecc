@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Newsletter – IECC Admin</title>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+<div class="al">
+  <div id="sb-ph"></div>
+  <div class="am">
+    <header class="ah">
+      <h1 class="page-title">Newsletter Subscribers</h1>
+      <div class="hdr-right"><span class="hdr-user"><strong id="admin-username"></strong></span><button class="btn-logout" onclick="logout()">Logout</button></div>
+    </header>
+    <main class="ac">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px">
+        <div class="sc"><div><div class="sc-val" id="s-total">–</div><div class="sc-lbl">Total Subscribers</div></div><div class="sc-icon">📨</div></div>
+        <div class="sc"><div><div class="sc-val" id="s-active">–</div><div class="sc-lbl">Active</div></div><div class="sc-icon">✅</div></div>
+        <div class="sc"><div><div class="sc-val" id="s-inactive">–</div><div class="sc-lbl">Unsubscribed</div></div><div class="sc-icon">🚫</div></div>
+      </div>
+      <div class="tcard">
+        <div class="tcard-hd">
+          <span class="tcard-title">Subscribers</span>
+          <div class="tcard-acts">
+            <input class="fi" id="search" placeholder="Search email…" oninput="filterTable()"/>
+            <select class="fs" id="f-status" onchange="filterTable()"><option value="">All</option><option value="active">Active</option><option value="inactive">Inactive</option></select>
+            <button class="btn btn-gold btn-sm" onclick="exportData()">⬇ Export CSV</button>
+          </div>
+        </div>
+        <table class="at">
+          <thead><tr><th>Email</th><th>Subscribed</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="nl-tbody"><tr><td colspan="4" style="padding:24px;text-align:center;color:#94a3b8">Loading…</td></tr></tbody>
+        </table>
+        <div style="padding:12px 16px;font-size:.78rem;color:#94a3b8;border-top:1px solid #e2e8f0" id="row-count"></div>
+      </div>
+    </main>
+  </div>
+</div>
+<script src="admin.js"></script>
+<script>
+let allSubs=[];
+document.addEventListener('DOMContentLoaded', async()=>{ if(!await requireAuth()) return; allSubs=await apiGet('/admin/api/newsletter')||[]; updateStats(); render(allSubs); });
+function updateStats(){const active=allSubs.filter(s=>s.isActive).length;document.getElementById('s-total').textContent=allSubs.length;document.getElementById('s-active').textContent=active;document.getElementById('s-inactive').textContent=allSubs.length-active;}
+function render(rows){
+  document.getElementById('nl-tbody').innerHTML=rows.length
+    ?rows.map(s=>`<tr><td style="font-weight:600">${esc(s.email)}</td><td style="white-space:nowrap;color:#64748b">${fmtDate(s.subscribedAt)}</td><td>${s.isActive?badge('Active','active-sub'):badge('Inactive','inactive')}</td><td><button class="btn btn-sm ${s.isActive?'btn-danger':'btn-primary'}" onclick="toggleSub('${s.id}',this)">${s.isActive?'Unsubscribe':'Reactivate'}</button></td></tr>`).join('')
+    :`<tr><td colspan="4"><div class="empty"><div class="empty-icon">📨</div><div class="empty-text">No subscribers match</div></div></td></tr>`;
+  document.getElementById('row-count').textContent=`${rows.length} subscriber${rows.length!==1?'s':''}`;
+}
+function filterTable(){const q=document.getElementById('search').value.toLowerCase(),fs=document.getElementById('f-status').value;render(allSubs.filter(s=>(!q||s.email.toLowerCase().includes(q))&&(!fs||(fs==='active'?s.isActive:!s.isActive))));}
+async function toggleSub(id,btn){btn.disabled=true;const r=await apiPatch(`/admin/api/newsletter/${id}/toggle`);if(!r){btn.disabled=false;return;}const s=allSubs.find(x=>x.id===id);if(s)s.isActive=r.isActive;updateStats();filterTable();adminToast(r.isActive?'Reactivated':'Unsubscribed');}
+function exportData(){exportCSV(allSubs.map(s=>({Email:s.email,SubscribedDate:fmtDate(s.subscribedAt),Active:s.isActive?'Yes':'No'})),'newsletter_subscribers.csv');}
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Donations – IECC Admin</title>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+<div class="al">
+  <div id="sb-ph"></div>
+  <div class="am">
+    <header class="ah">
+      <h1 class="page-title">Donations</h1>
+      <div class="hdr-right"><span class="hdr-user"><strong id="admin-username"></strong></span><button class="btn-logout" onclick="logout()">Logout</button></div>
+    </header>
+    <main class="ac">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px">
+        <div class="sc"><div><div class="sc-val" id="s-total">–</div><div class="sc-lbl">Total Raised</div></div><div class="sc-icon">💰</div></div>
+        <div class="sc"><div><div class="sc-val" id="s-count">–</div><div class="sc-lbl">Total Donations</div></div><div class="sc-icon">📋</div></div>
+        <div class="sc"><div><div class="sc-val" id="s-avg">–</div><div class="sc-lbl">Average Donation</div></div><div class="sc-icon">📊</div></div>
+      </div>
+      <div class="tcard">
+        <div class="tcard-hd">
+          <span class="tcard-title">All Donations</span>
+          <div class="tcard-acts">
+            <input class="fi" id="search" placeholder="Search donor / email…" oninput="filterTable()"/>
+            <select class="fs" id="f-method" onchange="filterTable()"><option value="">All Methods</option><option>PayPal</option><option>Zelle</option><option>Card</option></select>
+            <select class="fs" id="f-status" onchange="filterTable()"><option value="">All Statuses</option><option>completed</option><option>pending</option><option>failed</option></select>
+            <button class="btn btn-gold btn-sm" onclick="exportData()">⬇ Export CSV</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="at">
+            <thead><tr><th>Date</th><th>Donor Name</th><th>Email</th><th>Amount</th><th>Method</th><th>Frequency</th><th>Status</th><th>Transaction ID</th></tr></thead>
+            <tbody id="don-tbody"><tr><td colspan="8" style="padding:24px;text-align:center;color:#94a3b8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+        <div style="padding:12px 16px;font-size:.78rem;color:#94a3b8;border-top:1px solid #e2e8f0" id="row-count"></div>
+      </div>
+    </main>
+  </div>
+</div>
+<script src="admin.js"></script>
+<script>
+let allDonations=[];
+document.addEventListener('DOMContentLoaded', async()=>{
+  if(!await requireAuth()) return;
+  allDonations=await apiGet('/admin/api/donations')||[];
+  render(allDonations);
+  const total=allDonations.reduce((s,d)=>s+d.amount,0), count=allDonations.length;
+  document.getElementById('s-total').textContent=fmtAmt(total);
+  document.getElementById('s-count').textContent=count;
+  document.getElementById('s-avg').textContent=count?fmtAmt(total/count):'$0.00';
+});
+function render(rows){
+  document.getElementById('don-tbody').innerHTML=rows.length
+    ?rows.map(d=>`<tr><td style="white-space:nowrap">${fmtDate(d.createdAt)}</td><td>${esc(d.donorName)}</td><td style="color:#64748b">${esc(d.donorEmail)}</td><td style="font-weight:700">${fmtAmt(d.amount)}</td><td>${badge(d.method,d.method)}</td><td>${badge(d.frequency,d.frequency)}</td><td>${badge(d.status)}</td><td style="font-size:.75rem;color:#94a3b8;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(d.transactionId)}</td></tr>`).join('')
+    :`<tr><td colspan="8"><div class="empty"><div class="empty-icon">💰</div><div class="empty-text">No donations match your filter</div></div></td></tr>`;
+  document.getElementById('row-count').textContent=`Showing ${rows.length} of ${allDonations.length} donations`;
+}
+function filterTable(){
+  const q=document.getElementById('search').value.toLowerCase(),fm=document.getElementById('f-method').value.toLowerCase(),fs=document.getElementById('f-status').value.toLowerCase();
+  render(allDonations.filter(d=>(!q||(d.donorName||'').toLowerCase().includes(q)||(d.donorEmail||'').toLowerCase().includes(q))&&(!fm||d.method.toLowerCase()===fm)&&(!fs||d.status.toLowerCase()===fs)));
+}
+function exportData(){exportCSV(allDonations.map(d=>({Date:fmtDate(d.createdAt),DonorName:d.donorName||'',Email:d.donorEmail||'',Amount:d.amount,Method:d.method,Frequency:d.frequency,Status:d.status,TransactionId:d.transactionId||''})),'donations.csv');}
+</script>
+</body>
+</html>

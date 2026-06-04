@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Dashboard – IECC Admin</title>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+<div class="al">
+  <div id="sb-ph"></div>
+  <div class="am">
+    <header class="ah">
+      <h1 class="page-title">Dashboard</h1>
+      <div class="hdr-right">
+        <span class="hdr-user">Welcome, <strong id="admin-username"></strong></span>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+      </div>
+    </header>
+    <main class="ac">
+
+      <div class="stats-grid">
+        <div class="sc"><div><div class="sc-val" id="s-raised">–</div><div class="sc-lbl">Total Raised</div></div><div class="sc-icon">💰</div></div>
+        <div class="sc"><div><div class="sc-val" id="s-contacts">–</div><div class="sc-lbl">Pending Contacts</div></div><div class="sc-icon">📧</div></div>
+        <div class="sc"><div><div class="sc-val" id="s-volunteers">–</div><div class="sc-lbl">Pending Volunteers</div></div><div class="sc-icon">🤝</div></div>
+        <div class="sc"><div><div class="sc-val" id="s-subs">–</div><div class="sc-lbl">Newsletter Subscribers</div></div><div class="sc-icon">📨</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:18px">
+        <div class="tcard">
+          <div class="tcard-hd"><span class="tcard-title">Recent Donations</span><a href="donations.html" class="btn btn-secondary btn-sm">View All →</a></div>
+          <table class="at">
+            <thead><tr><th>Date</th><th>Donor</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
+            <tbody id="d-tbody"><tr><td colspan="5" style="padding:20px;text-align:center;color:#94a3b8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+        <div class="tcard">
+          <div class="tcard-hd"><span class="tcard-title">Unresolved Contacts</span><a href="contacts.html" class="btn btn-secondary btn-sm">View All →</a></div>
+          <table class="at">
+            <thead><tr><th>Date</th><th>Name</th><th>Subject</th><th></th></tr></thead>
+            <tbody id="c-tbody"><tr><td colspan="4" style="padding:20px;text-align:center;color:#94a3b8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px">
+        <div class="tcard">
+          <div class="tcard-hd"><span class="tcard-title">Pending Volunteers</span><a href="volunteers.html" class="btn btn-secondary btn-sm">View All →</a></div>
+          <table class="at">
+            <thead><tr><th>Date</th><th>Name</th><th>Role</th><th></th></tr></thead>
+            <tbody id="v-tbody"><tr><td colspan="4" style="padding:20px;text-align:center;color:#94a3b8">Loading…</td></tr></tbody>
+          </table>
+        </div>
+        <div class="tcard">
+          <div class="tcard-hd"><span class="tcard-title">Quick Actions</span></div>
+          <div style="padding:18px;display:flex;flex-direction:column;gap:10px">
+            <a href="events.html"      class="btn btn-primary"   style="justify-content:center">📅 Manage Events</a>
+            <a href="newsletter.html"  class="btn btn-primary"   style="justify-content:center">📨 Newsletter Subscribers</a>
+            <a href="donations.html"   class="btn btn-gold"      style="justify-content:center">💰 View Donations</a>
+            <a href="/" target="_blank" class="btn btn-secondary" style="justify-content:center">🌐 View Public Site ↗</a>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+<script src="admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!await requireAuth()) return;
+
+  const stats = await apiGet('/admin/api/stats');
+  if (stats) {
+    document.getElementById('s-raised').textContent     = fmtAmt(stats.totalDonations);
+    document.getElementById('s-contacts').textContent   = stats.pendingContacts;
+    document.getElementById('s-volunteers').textContent = stats.pendingVolunteers;
+    document.getElementById('s-subs').textContent       = stats.subscribers;
+  }
+
+  const donations = await apiGet('/admin/api/donations');
+  document.getElementById('d-tbody').innerHTML = donations?.length
+    ? donations.slice(0,8).map(d=>`<tr>
+        <td style="white-space:nowrap">${fmtDate(d.createdAt)}</td>
+        <td class="trunc">${esc(d.donorName)}</td>
+        <td style="font-weight:700">${fmtAmt(d.amount)}</td>
+        <td>${badge(d.method,d.method)}</td>
+        <td>${badge(d.status)}</td></tr>`).join('')
+    : `<tr><td colspan="5"><div class="empty"><div class="empty-icon">💰</div><div class="empty-text">No donations yet</div></div></td></tr>`;
+
+  const contacts = await apiGet('/admin/api/contacts');
+  const unresolved = (contacts||[]).filter(c=>!c.isResolved).slice(0,6);
+  document.getElementById('c-tbody').innerHTML = unresolved.length
+    ? unresolved.map(c=>`<tr>
+        <td style="white-space:nowrap">${fmtDate(c.createdAt)}</td>
+        <td>${esc(c.name)}</td>
+        <td class="trunc">${esc(c.subject)||'—'}</td>
+        <td><button class="btn btn-primary btn-xs" onclick="resolveC('${c.id}',this)">Resolve</button></td></tr>`).join('')
+    : `<tr><td colspan="4"><div class="empty"><div class="empty-icon">✅</div><div class="empty-text">All caught up!</div></div></td></tr>`;
+
+  const volunteers = await apiGet('/admin/api/volunteers');
+  const pending = (volunteers||[]).filter(v=>v.status==='pending').slice(0,6);
+  document.getElementById('v-tbody').innerHTML = pending.length
+    ? pending.map(v=>`<tr>
+        <td style="white-space:nowrap">${fmtDate(v.createdAt)}</td>
+        <td>${esc(v.name)}</td>
+        <td class="trunc">${esc(v.role)}</td>
+        <td><button class="btn btn-primary btn-xs" onclick="contactV('${v.id}',this)">Contact</button></td></tr>`).join('')
+    : `<tr><td colspan="4"><div class="empty"><div class="empty-icon">✅</div><div class="empty-text">None pending</div></div></td></tr>`;
+});
+
+async function resolveC(id,btn) { btn.disabled=true; const r=await apiPatch(`/admin/api/contacts/${id}/resolve`); if(r){btn.closest('tr').remove();adminToast('Marked resolved');} }
+async function contactV(id,btn) { btn.disabled=true; const r=await apiPatch(`/admin/api/volunteers/${id}/status`,{status:'contacted'}); if(r){btn.closest('tr').remove();adminToast('Status → Contacted');} }
+</script>
+</body>
+</html>
