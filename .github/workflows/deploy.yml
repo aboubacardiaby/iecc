@@ -104,15 +104,16 @@ jobs:
           timeout: 120s
           command_timeout: 20m
           script_stop: true
-          debug: true
           envs: IMAGE,CONTAINER_NAME,HOST_PORT,CONTAINER_PORT,GHCR_PAT,GHCR_USER,PAYPAL_CLIENT_ID,PAYPAL_CLIENT_SECRET,PAYPAL_MODE,SMTP_USERNAME,SMTP_PASSWORD,SMTP_FROM_EMAIL,DB_PASSWORD
           script: |
             set -e
 
-            # ── Validate required secrets ───────────────────
+            # ── Validate required secrets & tools ──────────
             : "${IMAGE:?IMAGE is empty — build job failed}"
             : "${GHCR_PAT:?GHCR_PAT secret is not set}"
-            : "${DB_PASSWORD:?DB_PASSWORD secret is not set — add it in GitHub repo Settings → Secrets}"
+            : "${DB_PASSWORD:?DB_PASSWORD secret is not set}"
+            command -v docker >/dev/null 2>&1 || { echo "ERROR: Docker is not installed. Run: curl -fsSL https://get.docker.com | sh"; exit 1; }
+            docker info >/dev/null 2>&1 || { echo "ERROR: Docker daemon is not running or user lacks permission. Run: systemctl start docker"; exit 1; }
 
             # ── Docker network ──────────────────────────────
             docker network create iecc-net 2>/dev/null || true
