@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Infrastructure;
@@ -177,7 +178,7 @@ app.MapPost("/admin/login", async (LoginRequest req, HttpContext ctx, IConfigura
     var claims   = new[] { new Claim(ClaimTypes.Name, req.Username), new Claim(ClaimTypes.Role, "Admin") };
     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
     await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity),
-        new Microsoft.AspNetCore.Authentication.AuthenticationProperties { IsPersistent = true });
+        new AuthenticationProperties { IsPersistent = true });
     return Results.Ok(new { ok = true });
 });
 
