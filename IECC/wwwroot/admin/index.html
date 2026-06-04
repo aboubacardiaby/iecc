@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin Login – IECC Masjid</title>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+<div class="lp">
+  <div class="lcard">
+    <div class="llogo">
+      <div class="llogo-icon">🕌</div>
+      <span class="llogo-name">IECC Masjid</span>
+      <span class="llogo-sub">Admin Dashboard</span>
+    </div>
+    <div class="lerr" id="login-err"></div>
+    <form id="login-form">
+      <div class="fg"><label class="fl">Username</label><input class="fi2" type="text" id="lu" autocomplete="username" required autofocus/></div>
+      <div class="fg"><label class="fl">Password</label><input class="fi2" type="password" id="lp" autocomplete="current-password" required/></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px">Sign In</button>
+    </form>
+  </div>
+</div>
+<script>
+  (async () => {
+    try { const r = await fetch('/admin/api/me'); if (r.ok) location.href='/admin/dashboard.html'; } catch {}
+  })();
+  document.getElementById('login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button'); btn.disabled=true; btn.textContent='Signing in…';
+    const err = document.getElementById('login-err'); err.classList.remove('show');
+    const r = await fetch('/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:document.getElementById('lu').value,password:document.getElementById('lp').value})});
+    if (r.ok) { location.href='/admin/dashboard.html'; }
+    else { err.textContent='Invalid username or password.'; err.classList.add('show'); btn.disabled=false; btn.textContent='Sign In'; }
+  });
+</script>
+</body>
+</html>
