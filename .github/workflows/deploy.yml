@@ -106,8 +106,6 @@ jobs:
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           SMTP_FROM_EMAIL: ${{ secrets.SMTP_FROM_EMAIL }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
-          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -116,7 +114,7 @@ jobs:
           timeout: 120s
           command_timeout: 20m
           script_stop: true
-          envs: IMAGE,CONTAINER_NAME,POSTGRES_CONTAINER_NAME,DOCKER_NETWORK,POSTGRES_VOLUME,POSTGRES_DB,POSTGRES_USER,HOST_PORT,CONTAINER_PORT,GHCR_PAT,GHCR_USER,PAYPAL_CLIENT_ID,PAYPAL_CLIENT_SECRET,PAYPAL_MODE,SMTP_USERNAME,SMTP_PASSWORD,SMTP_FROM_EMAIL,DB_PASSWORD,ADMIN_USERNAME,ADMIN_PASSWORD
+          envs: IMAGE,CONTAINER_NAME,POSTGRES_CONTAINER_NAME,DOCKER_NETWORK,POSTGRES_VOLUME,POSTGRES_DB,POSTGRES_USER,HOST_PORT,CONTAINER_PORT,GHCR_PAT,GHCR_USER,PAYPAL_CLIENT_ID,PAYPAL_CLIENT_SECRET,PAYPAL_MODE,SMTP_USERNAME,SMTP_PASSWORD,SMTP_FROM_EMAIL,DB_PASSWORD
           script: |
             set -euxo pipefail
 
@@ -124,7 +122,6 @@ jobs:
             : "${IMAGE:?IMAGE is empty}"
             : "${GHCR_PAT:?GHCR_PAT secret is not set}"
             : "${DB_PASSWORD:?DB_PASSWORD secret is not set}"
-            : "${ADMIN_PASSWORD:?ADMIN_PASSWORD secret is not set}"
             : "${HOST_PORT:?HOST_PORT is empty}"
             : "${CONTAINER_PORT:?CONTAINER_PORT is empty}"
 
@@ -215,8 +212,6 @@ jobs:
               -e Smtp__Password="$SMTP_PASSWORD" \
               -e Smtp__FromName="IECC Masjid" \
               -e Smtp__FromEmail="$SMTP_FROM_EMAIL" \
-              -e Admin__Username="${ADMIN_USERNAME:-admin}" \
-              -e Admin__Password="$ADMIN_PASSWORD" \
               "$IMAGE"
 
             echo "Waiting for app to respond..."
