@@ -95,35 +95,59 @@ jobs:
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           SMTP_FROM_EMAIL: ${{ secrets.SMTP_FROM_EMAIL }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          # Hostinger often uses a custom SSH port. Set this secret explicitly.
           port: ${{ secrets.VPS_SSH_PORT }}
           timeout: 120s
           command_timeout: 20m
           script_stop: true
-          envs: IMAGE,CONTAINER_NAME,HOST_PORT,CONTAINER_PORT,GHCR_PAT,GHCR_USER,PAYPAL_CLIENT_ID,PAYPAL_CLIENT_SECRET,PAYPAL_MODE,SMTP_USERNAME,SMTP_PASSWORD,SMTP_FROM_EMAIL
+          envs: IMAGE,CONTAINER_NAME,HOST_PORT,CONTAINER_PORT,GHCR_PAT,GHCR_USER,PAYPAL_CLIENT_ID,PAYPAL_CLIENT_SECRET,PAYPAL_MODE,SMTP_USERNAME,SMTP_PASSWORD,SMTP_FROM_EMAIL,DB_PASSWORD
           script: |
             set -e
 
+            # ── Docker network ──────────────────────────────
+            docker network create iecc-net 2>/dev/null || true
+
+            # ── Postgres (start once, data persists in volume) ──
+            if ! docker inspect iecc-postgres &>/dev/null; then
+              echo "Starting Postgres container for the first time..."
+              docker run -d \
+                --name iecc-postgres \
+                --network iecc-net \
+                --restart unless-stopped \
+                -v iecc-pgdata:/var/lib/postgresql/data \
+                -e POSTGRES_DB=iecc \
+                -e POSTGRES_USER=iecc \
+                -e POSTGRES_PASSWORD="$DB_PASSWORD" \
+                postgres:16-alpine
+              echo "Waiting for Postgres to be ready..."
+              sleep 10
+            else
+              echo "Postgres container already running, skipping..."
+            fi
+
+            # ── App container ───────────────────────────────
             echo "Logging in to GitHub Container Registry..."
             echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
 
             echo "Pulling image: $IMAGE"
             docker pull "$IMAGE"
 
-            echo "Stopping existing container if it exists..."
+            echo "Stopping existing app container..."
             docker stop "$CONTAINER_NAME" || true
-            docker rm "$CONTAINER_NAME" || true
+            docker rm   "$CONTAINER_NAME" || true
 
-            echo "Starting new container..."
+            echo "Starting app container..."
             docker run -d \
               --name "$CONTAINER_NAME" \
+              --network iecc-net \
               --restart unless-stopped \
               -p 127.0.0.1:${HOST_PORT}:${CONTAINER_PORT} \
               -e ASPNETCORE_ENVIRONMENT=Production \
+              -e "ConnectionStrings__DefaultConnection=Host=iecc-postgres;Port=5432;Database=iecc;Username=iecc;Password=$DB_PASSWORD" \
               -e PayPal__ClientId="$PAYPAL_CLIENT_ID" \
               -e PayPal__ClientSecret="$PAYPAL_CLIENT_SECRET" \
               -e PayPal__Mode="$PAYPAL_MODE" \
@@ -135,12 +159,12 @@ jobs:
               -e Smtp__FromEmail="$SMTP_FROM_EMAIL" \
               "$IMAGE"
 
-            echo "Current container status:"
+            echo "Container status:"
             docker ps --filter "name=$CONTAINER_NAME"
 
-            echo "Checking application response on localhost..."
+            echo "Checking app response..."
             sleep 5
             curl -f "http://127.0.0.1:${HOST_PORT}" || docker logs "$CONTAINER_NAME" --tail 100
 
-            echo "Cleaning old Docker images..."
+            echo "Cleaning old images..."
             docker image prune -f

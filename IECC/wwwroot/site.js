@@ -407,8 +407,13 @@ function _initVolunteerForm() {
 function _initNewsletter() {
   const form = document.getElementById('newsletter-form');
   if (!form) return;
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
+    const email = form.querySelector('input[type=email]')?.value?.trim();
+    if (!email) return;
+    try {
+      await fetch('/api/newsletter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+    } catch (_) { /* best-effort */ }
     if (typeof showToast === 'function') showToast('Subscribed! JazakAllahu Khayran.');
     form.reset();
   });
