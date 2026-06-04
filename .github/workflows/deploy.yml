@@ -72,6 +72,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Verify SSH network access
+        shell: bash
+        run: |
+          echo "Testing SSH connectivity to VPS..."
+          echo "Host: ${{ secrets.VPS_HOST }}"
+          echo "Port: ${{ secrets.VPS_SSH_PORT }}"
+          nc -vz -w 15 ${{ secrets.VPS_HOST }} ${{ secrets.VPS_SSH_PORT }}
+
       - name: Deploy Docker container over SSH
         uses: appleboy/ssh-action@v1.2.0
         env:
@@ -91,8 +99,9 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_SSH_PORT || 22 }}
-          timeout: 60s
+          # Hostinger often uses a custom SSH port. Set this secret explicitly.
+          port: ${{ secrets.VPS_SSH_PORT }}
+          timeout: 120s
           command_timeout: 20m
           script_stop: true
           envs: IMAGE,CONTAINER_NAME,HOST_PORT,CONTAINER_PORT,GHCR_PAT,GHCR_USER,PAYPAL_CLIENT_ID,PAYPAL_CLIENT_SECRET,PAYPAL_MODE,SMTP_USERNAME,SMTP_PASSWORD,SMTP_FROM_EMAIL
