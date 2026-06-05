@@ -141,16 +141,20 @@ jobs:
             docker pull "$IMAGE"
 
             echo "Checking Postgres container..."
-            if docker inspect "$POSTGRES_CONTAINER_NAME" >/dev/null 2>&1; then
-              POSTGRES_STATUS="$(docker inspect -f '{{.State.Status}}' "$POSTGRES_CONTAINER_NAME")"
-              echo "Existing Postgres status: $POSTGRES_STATUS"
+            POSTGRES_STATUS="$(docker inspect -f '{{.State.Status}}' "$POSTGRES_CONTAINER_NAME" 2>/dev/null || echo 'not-found')"
+            echo "Postgres status: $POSTGRES_STATUS"
 
-              if [ "$POSTGRES_STATUS" = "exited" ] || [ "$POSTGRES_STATUS" = "dead" ]; then
-                echo "Starting existing Postgres container..."
+            case "$POSTGRES_STATUS" in
+              running)
+                echo "Postgres already running — nothing to do."
+                ;;
+              exited|dead)
+                echo "Restarting stopped Postgres container..."
                 docker start "$POSTGRES_CONTAINER_NAME"
-              elif [ "$POSTGRES_STATUS" = "restarting" ]; then
-                echo "Postgres is stuck restarting. Showing logs and recreating the container while keeping the data volume..."
-                docker logs "$POSTGRES_CONTAINER_NAME" --tail=100 || true
+                ;;
+              restarting)
+                echo "Postgres stuck in restart loop — recreating (data volume preserved)..."
+                docker logs "$POSTGRES_CONTAINER_NAME" --tail=50 || true
                 docker rm -f "$POSTGRES_CONTAINER_NAME"
                 docker run -d \
                   --name "$POSTGRES_CONTAINER_NAME" \
@@ -161,38 +165,37 @@ jobs:
                   -e POSTGRES_USER="$POSTGRES_USER" \
                   -e POSTGRES_PASSWORD="$DB_PASSWORD" \
                   postgres:16-alpine
-              else
-                echo "Postgres container already exists."
-              fi
-            else
-              echo "Creating Postgres container..."
-              docker run -d \
-                --name "$POSTGRES_CONTAINER_NAME" \
-                --network "$DOCKER_NETWORK" \
-                --restart unless-stopped \
-                -v "$POSTGRES_VOLUME":/var/lib/postgresql/data \
-                -e POSTGRES_DB="$POSTGRES_DB" \
-                -e POSTGRES_USER="$POSTGRES_USER" \
-                -e POSTGRES_PASSWORD="$DB_PASSWORD" \
-                postgres:16-alpine
-            fi
+                ;;
+              not-found)
+                echo "Creating Postgres container for the first time..."
+                docker run -d \
+                  --name "$POSTGRES_CONTAINER_NAME" \
+                  --network "$DOCKER_NETWORK" \
+                  --restart unless-stopped \
+                  -v "$POSTGRES_VOLUME":/var/lib/postgresql/data \
+                  -e POSTGRES_DB="$POSTGRES_DB" \
+                  -e POSTGRES_USER="$POSTGRES_USER" \
+                  -e POSTGRES_PASSWORD="$DB_PASSWORD" \
+                  postgres:16-alpine
+                ;;
+              *)
+                echo "Unknown status '$POSTGRES_STATUS' — attempting start..."
+                docker start "$POSTGRES_CONTAINER_NAME" || true
+                ;;
+            esac
 
-            echo "Waiting for Postgres readiness..."
+            echo "Waiting for Postgres readiness (up to 60s)..."
+            PGREADY=0
             for i in $(seq 1 30); do
-              if docker exec "$POSTGRES_CONTAINER_NAME" pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" >/dev/null 2>&1; then
-                echo "Postgres is ready."
-                break
-              fi
-
-              if [ "$i" -eq 30 ]; then
-                echo "ERROR: Postgres did not become ready."
-                docker ps -a --filter "name=$POSTGRES_CONTAINER_NAME"
-                docker logs "$POSTGRES_CONTAINER_NAME" --tail=200 || true
-                exit 1
-              fi
-
+              docker exec "$POSTGRES_CONTAINER_NAME" pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" >/dev/null 2>&1 && PGREADY=1 && break || true
               sleep 2
             done
+            if [ "$PGREADY" -eq 0 ]; then
+              echo "ERROR: Postgres did not become ready after 60s."
+              docker logs "$POSTGRES_CONTAINER_NAME" --tail=100 || true
+              exit 1
+            fi
+            echo "Postgres is ready."
 
             echo "Removing existing app container..."
             docker rm -f "$CONTAINER_NAME" || true
@@ -226,25 +229,19 @@ jobs:
             docker ps -a --filter "name=$CONTAINER_NAME" --filter "name=$POSTGRES_CONTAINER_NAME"
 
             echo "Testing app on localhost..."
+            APPREADY=0
             for i in $(seq 1 12); do
-              if curl -fsS "http://127.0.0.1:${HOST_PORT}" >/dev/null; then
-                echo "App is responding on http://127.0.0.1:${HOST_PORT}"
-                break
-              fi
-
-              if [ "$i" -eq 12 ]; then
-                echo "ERROR: App did not respond."
-                echo "App inspect:"
-                docker inspect "$CONTAINER_NAME" --format='Status={{.State.Status}} ExitCode={{.State.ExitCode}} Error={{.State.Error}} OOMKilled={{.State.OOMKilled}}' || true
-                echo "App logs:"
-                docker logs "$CONTAINER_NAME" --tail=200 || true
-                echo "Postgres logs:"
-                docker logs "$POSTGRES_CONTAINER_NAME" --tail=100 || true
-                exit 1
-              fi
-
+              curl -fsS "http://127.0.0.1:${HOST_PORT}" >/dev/null 2>&1 && APPREADY=1 && break || true
               sleep 5
             done
+            if [ "$APPREADY" -eq 0 ]; then
+              echo "ERROR: App did not respond after 60s."
+              docker inspect "$CONTAINER_NAME" --format='Status={{.State.Status}} ExitCode={{.State.ExitCode}}' || true
+              docker logs "$CONTAINER_NAME" --tail=200 || true
+              docker logs "$POSTGRES_CONTAINER_NAME" --tail=50 || true
+              exit 1
+            fi
+            echo "App is responding on http://127.0.0.1:${HOST_PORT}"
 
             echo "Cleaning old images..."
             docker image prune -f
