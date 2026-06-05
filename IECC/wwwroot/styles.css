@@ -2023,3 +2023,93 @@ body {
   .lp-hero-stats    { flex-wrap: wrap; gap: 14px; }
   .lp-hero-stat-div { display: none; }
 }
+
+/* ── HERO SLIDER ─────────────────────────────────────── */
+.hero-slider {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0a1e14;
+  box-shadow: 0 24px 64px rgba(0,0,0,.55), 0 0 0 1px rgba(232,160,32,.15);
+}
+
+.hs-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .7s ease;
+  pointer-events: none;
+}
+.hs-slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hs-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Caption bar */
+.hs-caption {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 10px 44px 10px 14px;
+  background: linear-gradient(transparent, rgba(0,0,0,.65));
+  color: rgba(255,255,255,.88);
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .3px;
+}
+
+/* Prev / Next buttons */
+.hs-prev, .hs-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,.45);
+  color: #fff;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 5;
+  transition: background .2s, transform .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.hs-prev:hover, .hs-next:hover { background: rgba(232,160,32,.75); transform: translateY(-50%) scale(1.1); }
+.hs-prev { left: 10px; }
+.hs-next { right: 10px; }
+
+/* Dot indicators */
+.hs-dots {
+  position: absolute;
+  bottom: 38px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 5;
+}
+.hs-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.55);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: all .2s;
+}
+.hs-dot.active { background: var(--gold, #e8a020); border-color: var(--gold, #e8a020); transform: scale(1.2); }
+.hs-dot:hover  { border-color: #fff; }

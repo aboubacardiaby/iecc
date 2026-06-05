@@ -31,35 +31,138 @@
       </div>
     </div>
     <div class="lp-hero-art">
-      <svg viewBox="0 0 340 240" xmlns="http://www.w3.org/2000/svg" width="100%" aria-hidden="true">
-        <defs>
-          <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0d2a1e"/><stop offset="100%" stop-color="#1a4a30"/></linearGradient>
-        </defs>
-        <rect width="340" height="240" fill="url(#skyG)"/>
-        <rect y="165" width="340" height="75" fill="#0d1f16"/>
-        <circle cx="22" cy="22" r="1.5" fill="#fff" opacity="0.8"/>
-        <circle cx="290" cy="18" r="1.5" fill="#fff" opacity="0.7"/>
-        <circle cx="140" cy="12" r="1" fill="#fff" opacity="0.6"/>
-        <circle cx="260" cy="10" r="1.2" fill="#fff" opacity="0.7"/>
-        <rect x="38" y="80" width="16" height="95" fill="#b89a5e" rx="2"/>
-        <ellipse cx="46" cy="80" rx="8" ry="6" fill="#c8a96e"/>
-        <polygon points="46,62 40,80 52,80" fill="#e8a020"/>
-        <rect x="286" y="80" width="16" height="95" fill="#b89a5e" rx="2"/>
-        <ellipse cx="294" cy="80" rx="8" ry="6" fill="#c8a96e"/>
-        <polygon points="294,62 288,80 300,80" fill="#e8a020"/>
-        <rect x="68" y="100" width="204" height="75" fill="#c8a96e" rx="2"/>
-        <ellipse cx="170" cy="100" rx="55" ry="40" fill="#d4a843"/>
-        <ellipse cx="170" cy="103" rx="18" ry="12" fill="#1a3d2a"/>
-        <ellipse cx="100" cy="108" rx="26" ry="18" fill="#c89838"/>
-        <ellipse cx="240" cy="108" rx="26" ry="18" fill="#c89838"/>
-        <path d="M96,155 L96,135 Q108,122 120,135 L120,155 Z" fill="#1a3d2a"/>
-        <path d="M220,155 L220,135 Q232,122 244,135 L244,155 Z" fill="#1a3d2a"/>
-        <path d="M152,175 L152,140 Q170,120 188,140 L188,175 Z" fill="#1a3d2a"/>
-        <rect x="155" y="175" width="30" height="65" fill="#b08844"/>
-        <path d="M163,74 Q172,68 181,74 Q172,70 163,77 Z" fill="#fff"/>
-        <circle cx="179" cy="62" r="3" fill="#fff"/>
-        <rect x="0" y="168" width="340" height="3" fill="#e8a020" opacity="0.3"/>
-      </svg>
+      <div class="hero-slider" id="hero-slider">
+
+        <!-- Slide 1: Masjid Building -->
+        <div class="hs-slide active">
+          <!-- Replace src with your video: <video class="hs-media" autoplay muted loop playsinline><source src="/videos/masjid.mp4" type="video/mp4"></video> -->
+          <svg class="hs-media" viewBox="0 0 340 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="s1bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0a1e14"/><stop offset="100%" stop-color="#1a4a30"/></linearGradient>
+            </defs>
+            <rect width="340" height="240" fill="url(#s1bg)"/>
+            <rect y="175" width="340" height="65" fill="#0d1a10"/>
+            <circle cx="30" cy="20" r="1.5" fill="#fff" opacity=".7"/>
+            <circle cx="280" cy="15" r="1.2" fill="#fff" opacity=".6"/>
+            <circle cx="150" cy="10" r="1" fill="#fff" opacity=".5"/>
+            <circle cx="310" cy="35" r="1" fill="#fff" opacity=".6"/>
+            <circle cx="60" cy="30" r="0.8" fill="#fff" opacity=".5"/>
+            <rect x="36" y="78" width="14" height="97" fill="#b89a5e" rx="2"/>
+            <ellipse cx="43" cy="78" rx="7" ry="5" fill="#c8a96e"/>
+            <polygon points="43,60 37,78 49,78" fill="#e8a020"/>
+            <rect x="290" y="78" width="14" height="97" fill="#b89a5e" rx="2"/>
+            <ellipse cx="297" cy="78" rx="7" ry="5" fill="#c8a96e"/>
+            <polygon points="297,60 291,78 303,78" fill="#e8a020"/>
+            <rect x="65" y="98" width="210" height="77" fill="#c8a96e" rx="2"/>
+            <ellipse cx="170" cy="98" rx="56" ry="40" fill="#d4a843"/>
+            <ellipse cx="170" cy="101" rx="17" ry="11" fill="#1a3d2a"/>
+            <ellipse cx="100" cy="107" rx="25" ry="17" fill="#c89838"/>
+            <ellipse cx="240" cy="107" rx="25" ry="17" fill="#c89838"/>
+            <path d="M95,153 L95,133 Q107,120 119,133 L119,153 Z" fill="#1a3d2a"/>
+            <path d="M221,153 L221,133 Q233,120 245,133 L245,153 Z" fill="#1a3d2a"/>
+            <path d="M153,175 L153,140 Q170,120 187,140 L187,175 Z" fill="#1a3d2a"/>
+            <rect x="156" y="175" width="28" height="65" fill="#b08844"/>
+            <path d="M163,73 Q171,67 180,73 Q171,69 163,76 Z" fill="#fff"/>
+            <circle cx="178" cy="61" r="2.8" fill="#fff"/>
+            <rect x="0" y="178" width="340" height="2" fill="#e8a020" opacity=".25"/>
+          </svg>
+          <div class="hs-caption">🕌 Our Masjid — 4801 Welcome Ave North, Crystal MN</div>
+        </div>
+
+        <!-- Slide 2: Prayer & Community -->
+        <div class="hs-slide">
+          <!-- Replace with: <video class="hs-media" autoplay muted loop playsinline><source src="/videos/prayer.mp4" type="video/mp4"></video> -->
+          <svg class="hs-media" viewBox="0 0 340 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="s2bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0d1e2e"/><stop offset="100%" stop-color="#1a3040"/></linearGradient>
+              <radialGradient id="s2glow" cx="50%" cy="45%" r="40%"><stop offset="0%" stop-color="#e8a020" stop-opacity=".18"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+            </defs>
+            <rect width="340" height="240" fill="url(#s2bg)"/>
+            <rect width="340" height="240" fill="url(#s2glow)"/>
+            <circle cx="170" cy="30" r="28" fill="none" stroke="#e8a020" stroke-width="1" opacity=".4"/>
+            <circle cx="170" cy="30" r="20" fill="none" stroke="#e8a020" stroke-width=".5" opacity=".3"/>
+            <!-- Crescent -->
+            <path d="M155,28 Q163,15 178,20 Q165,16 157,30 Q160,44 172,48 Q157,47 155,28 Z" fill="#e8a020" opacity=".9"/>
+            <circle cx="178" cy="18" r="3" fill="#e8a020" opacity=".9"/>
+            <!-- People silhouettes praying -->
+            <g fill="rgba(255,255,255,.15)">
+              <ellipse cx="90" cy="170" rx="14" ry="6"/>
+              <rect x="83" y="145" width="14" height="26" rx="5"/>
+              <circle cx="90" cy="138" r="8"/>
+              <ellipse cx="140" cy="170" rx="14" ry="6"/>
+              <rect x="133" y="145" width="14" height="26" rx="5"/>
+              <circle cx="140" cy="138" r="8"/>
+              <ellipse cx="190" cy="170" rx="14" ry="6"/>
+              <rect x="183" y="145" width="14" height="26" rx="5"/>
+              <circle cx="190" cy="138" r="8"/>
+              <ellipse cx="240" cy="170" rx="14" ry="6"/>
+              <rect x="233" y="145" width="14" height="26" rx="5"/>
+              <circle cx="240" cy="138" r="8"/>
+            </g>
+            <!-- Floor line -->
+            <rect x="0" y="175" width="340" height="1" fill="#e8a020" opacity=".3"/>
+            <rect x="0" y="176" width="340" height="64" fill="rgba(0,0,0,.3)"/>
+            <!-- Stars -->
+            <circle cx="50" cy="50" r="1.2" fill="#fff" opacity=".5"/>
+            <circle cx="300" cy="40" r="1" fill="#fff" opacity=".4"/>
+            <circle cx="220" cy="70" r="1" fill="#fff" opacity=".4"/>
+            <circle cx="80" cy="80" r="0.8" fill="#fff" opacity=".3"/>
+          </svg>
+          <div class="hs-caption">🤲 Join us for all five daily prayers</div>
+        </div>
+
+        <!-- Slide 3: Education & Youth -->
+        <div class="hs-slide">
+          <!-- Replace with: <video class="hs-media" autoplay muted loop playsinline><source src="/videos/community.mp4" type="video/mp4"></video> -->
+          <svg class="hs-media" viewBox="0 0 340 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="s3bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1a1a0d"/><stop offset="100%" stop-color="#2a3a10"/></linearGradient>
+            </defs>
+            <rect width="340" height="240" fill="url(#s3bg)"/>
+            <!-- Open book -->
+            <g transform="translate(110,60)">
+              <path d="M60,0 Q60,0 60,80 Q30,70 0,80 Q0,0 0,0 Q30,10 60,0 Z" fill="rgba(232,160,32,.15)" stroke="#e8a020" stroke-width="1" opacity=".7"/>
+              <path d="M60,0 Q60,0 60,80 Q90,70 120,80 Q120,0 120,0 Q90,10 60,0 Z" fill="rgba(232,160,32,.1)" stroke="#e8a020" stroke-width="1" opacity=".7"/>
+              <!-- Lines on left page -->
+              <line x1="10" y1="20" x2="50" y2="18" stroke="#e8a020" stroke-width=".8" opacity=".5"/>
+              <line x1="10" y1="30" x2="50" y2="28" stroke="#e8a020" stroke-width=".8" opacity=".4"/>
+              <line x1="10" y1="40" x2="50" y2="38" stroke="#e8a020" stroke-width=".8" opacity=".4"/>
+              <line x1="10" y1="50" x2="50" y2="48" stroke="#e8a020" stroke-width=".8" opacity=".3"/>
+              <!-- Lines on right page -->
+              <line x1="70" y1="20" x2="110" y2="18" stroke="#e8a020" stroke-width=".8" opacity=".5"/>
+              <line x1="70" y1="30" x2="110" y2="28" stroke="#e8a020" stroke-width=".8" opacity=".4"/>
+              <line x1="70" y1="40" x2="110" y2="38" stroke="#e8a020" stroke-width=".8" opacity=".4"/>
+              <line x1="70" y1="50" x2="110" y2="48" stroke="#e8a020" stroke-width=".8" opacity=".3"/>
+            </g>
+            <!-- Arabic-style decorative border -->
+            <rect x="20" y="160" width="300" height="1" fill="#e8a020" opacity=".3"/>
+            <!-- Geometric pattern dots -->
+            <g fill="#e8a020" opacity=".2">
+              <circle cx="40" cy="40" r="3"/><circle cx="300" cy="40" r="3"/>
+              <circle cx="40" cy="200" r="3"/><circle cx="300" cy="200" r="3"/>
+              <circle cx="170" cy="200" r="3"/>
+            </g>
+            <!-- Stars -->
+            <circle cx="40" cy="20" r="1.2" fill="#fff" opacity=".5"/>
+            <circle cx="310" cy="25" r="1" fill="#fff" opacity=".4"/>
+            <circle cx="200" cy="15" r="1" fill="#fff" opacity=".4"/>
+            <!-- Subtle glow -->
+            <ellipse cx="170" cy="110" rx="80" ry="60" fill="rgba(232,160,32,.05)"/>
+          </svg>
+          <div class="hs-caption">📖 Quran, Arabic &amp; Islamic education for all ages</div>
+        </div>
+
+        <!-- Controls -->
+        <button class="hs-prev" onclick="hsNav(-1)" aria-label="Previous slide">&#8249;</button>
+        <button class="hs-next" onclick="hsNav(1)"  aria-label="Next slide">&#8250;</button>
+
+        <!-- Dots -->
+        <div class="hs-dots">
+          <button class="hs-dot active" onclick="hsGo(0)" aria-label="Slide 1"></button>
+          <button class="hs-dot" onclick="hsGo(1)" aria-label="Slide 2"></button>
+          <button class="hs-dot" onclick="hsGo(2)" aria-label="Slide 3"></button>
+        </div>
+      </div>
     </div>
   </div>
   <a href="#prayer-strip" class="lp-scroll-down" aria-label="Scroll down">
@@ -178,5 +281,51 @@
 <div class="toast" id="toast"></div>
 <script src="app.js"></script>
 <script src="site.js"></script>
+<script>
+(function () {
+  var slides, dots, cur = 0, timer;
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    dots[cur].classList.remove('active');
+    cur = (n + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+    dots[cur].classList.add('active');
+    var vid = slides[cur].querySelector('video');
+    if (vid) { vid.currentTime = 0; vid.play().catch(function(){}); }
+    reset();
+  }
+
+  function reset() {
+    clearInterval(timer);
+    timer = setInterval(function(){ goTo(cur + 1); }, 5000);
+  }
+
+  window.hsNav = function(d) { goTo(cur + d); };
+  window.hsGo  = function(n) { goTo(n); };
+
+  document.addEventListener('DOMContentLoaded', function () {
+    slides = document.querySelectorAll('.hs-slide');
+    dots   = document.querySelectorAll('.hs-dot');
+    if (!slides.length) return;
+
+    /* Pause on hover */
+    var sl = document.getElementById('hero-slider');
+    if (sl) {
+      sl.addEventListener('mouseenter', function(){ clearInterval(timer); });
+      sl.addEventListener('mouseleave', reset);
+    }
+
+    /* Touch / swipe support */
+    var startX = 0;
+    if (sl) {
+      sl.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; }, { passive:true });
+      sl.addEventListener('touchend',   function(e){ var dx = e.changedTouches[0].clientX - startX; if (Math.abs(dx) > 40) goTo(cur + (dx < 0 ? 1 : -1)); }, { passive:true });
+    }
+
+    reset();
+  });
+})();
+</script>
 </body>
 </html>
