@@ -118,130 +118,61 @@ jobs:
           script_stop: true
           envs: IMAGE,CONTAINER_NAME,POSTGRES_CONTAINER_NAME,DOCKER_NETWORK,POSTGRES_VOLUME,POSTGRES_DB,POSTGRES_USER,HOST_PORT,CONTAINER_PORT,GHCR_PAT,GHCR_USER,PAYPAL_CLIENT_ID,PAYPAL_CLIENT_SECRET,PAYPAL_MODE,SMTP_USERNAME,SMTP_PASSWORD,SMTP_FROM_EMAIL,DB_PASSWORD,ADMIN_USERNAME,ADMIN_PASSWORD
           script: |
-            set -euxo pipefail
+            set -eo pipefail
 
-            echo "Validating required values..."
             : "${IMAGE:?IMAGE is empty}"
-            : "${GHCR_PAT:?GHCR_PAT secret is not set}"
-            : "${DB_PASSWORD:?DB_PASSWORD secret is not set}"
-            : "${ADMIN_PASSWORD:?ADMIN_PASSWORD secret is not set}"
-            : "${HOST_PORT:?HOST_PORT is empty}"
-            : "${CONTAINER_PORT:?CONTAINER_PORT is empty}"
+            : "${GHCR_PAT:?GHCR_PAT not set}"
+            : "${DB_PASSWORD:?DB_PASSWORD not set}"
+            : "${ADMIN_PASSWORD:?ADMIN_PASSWORD not set}"
 
-            command -v docker >/dev/null 2>&1 || { echo "ERROR: Docker is not installed."; exit 1; }
-            docker info >/dev/null 2>&1 || { echo "ERROR: Docker daemon is not running or current user cannot access Docker."; exit 1; }
+            command -v docker >/dev/null 2>&1 || { echo "Docker not installed. Run: curl -fsSL https://get.docker.com | sh"; exit 1; }
+            docker info >/dev/null 2>&1 || { echo "Docker daemon not running"; exit 1; }
 
-            echo "Creating Docker network if needed..."
             docker network inspect "$DOCKER_NETWORK" >/dev/null 2>&1 || docker network create "$DOCKER_NETWORK"
 
-            echo "Logging in to GitHub Container Registry..."
             echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
-
-            echo "Pulling image: $IMAGE"
             docker pull "$IMAGE"
 
-            echo "Checking Postgres container..."
-            POSTGRES_STATUS="$(docker inspect -f '{{.State.Status}}' "$POSTGRES_CONTAINER_NAME" 2>/dev/null || echo 'not-found')"
-            echo "Postgres status: $POSTGRES_STATUS"
+            echo "=== Postgres ==="
+            docker inspect "$POSTGRES_CONTAINER_NAME" >/dev/null 2>&1 || docker run -d \
+              --name "$POSTGRES_CONTAINER_NAME" --network "$DOCKER_NETWORK" --restart unless-stopped \
+              -v "$POSTGRES_VOLUME":/var/lib/postgresql/data \
+              -e POSTGRES_DB="$POSTGRES_DB" -e POSTGRES_USER="$POSTGRES_USER" -e POSTGRES_PASSWORD="$DB_PASSWORD" \
+              postgres:16-alpine
+            docker start "$POSTGRES_CONTAINER_NAME" >/dev/null 2>&1 || true
 
-            case "$POSTGRES_STATUS" in
-              running)
-                echo "Postgres already running — nothing to do."
-                ;;
-              exited|dead)
-                echo "Restarting stopped Postgres container..."
-                docker start "$POSTGRES_CONTAINER_NAME"
-                ;;
-              restarting)
-                echo "Postgres stuck in restart loop — recreating (data volume preserved)..."
-                docker logs "$POSTGRES_CONTAINER_NAME" --tail=50 || true
-                docker rm -f "$POSTGRES_CONTAINER_NAME"
-                docker run -d \
-                  --name "$POSTGRES_CONTAINER_NAME" \
-                  --network "$DOCKER_NETWORK" \
-                  --restart unless-stopped \
-                  -v "$POSTGRES_VOLUME":/var/lib/postgresql/data \
-                  -e POSTGRES_DB="$POSTGRES_DB" \
-                  -e POSTGRES_USER="$POSTGRES_USER" \
-                  -e POSTGRES_PASSWORD="$DB_PASSWORD" \
-                  postgres:16-alpine
-                ;;
-              not-found)
-                echo "Creating Postgres container for the first time..."
-                docker run -d \
-                  --name "$POSTGRES_CONTAINER_NAME" \
-                  --network "$DOCKER_NETWORK" \
-                  --restart unless-stopped \
-                  -v "$POSTGRES_VOLUME":/var/lib/postgresql/data \
-                  -e POSTGRES_DB="$POSTGRES_DB" \
-                  -e POSTGRES_USER="$POSTGRES_USER" \
-                  -e POSTGRES_PASSWORD="$DB_PASSWORD" \
-                  postgres:16-alpine
-                ;;
-              *)
-                echo "Unknown status '$POSTGRES_STATUS' — attempting start..."
-                docker start "$POSTGRES_CONTAINER_NAME" || true
-                ;;
-            esac
-
-            echo "Waiting for Postgres readiness (up to 60s)..."
+            echo "Waiting for Postgres..."
             PGREADY=0
             for i in $(seq 1 30); do
-              docker exec "$POSTGRES_CONTAINER_NAME" pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" >/dev/null 2>&1 && PGREADY=1 && break || true
+              docker exec "$POSTGRES_CONTAINER_NAME" pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" >/dev/null 2>&1 \
+                && PGREADY=1 && break || true
               sleep 2
             done
-            if [ "$PGREADY" -eq 0 ]; then
-              echo "ERROR: Postgres did not become ready after 60s."
-              docker logs "$POSTGRES_CONTAINER_NAME" --tail=100 || true
-              exit 1
-            fi
-            echo "Postgres is ready."
+            test "$PGREADY" -eq 1 || { docker logs "$POSTGRES_CONTAINER_NAME" --tail=50; exit 1; }
+            echo "Postgres ready."
 
-            echo "Removing existing app container..."
-            docker rm -f "$CONTAINER_NAME" || true
-
-            echo "Starting app container..."
+            echo "=== App ==="
+            docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
             docker run -d \
-              --name "$CONTAINER_NAME" \
-              --network "$DOCKER_NETWORK" \
-              --restart unless-stopped \
+              --name "$CONTAINER_NAME" --network "$DOCKER_NETWORK" --restart unless-stopped \
               -p 127.0.0.1:${HOST_PORT}:${CONTAINER_PORT} \
               -e ASPNETCORE_ENVIRONMENT=Production \
               -e ASPNETCORE_URLS="http://+:${CONTAINER_PORT}" \
               -e "ConnectionStrings__DefaultConnection=Host=${POSTGRES_CONTAINER_NAME};Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${DB_PASSWORD}" \
-              -e PayPal__ClientId="$PAYPAL_CLIENT_ID" \
-              -e PayPal__ClientSecret="$PAYPAL_CLIENT_SECRET" \
-              -e PayPal__Mode="$PAYPAL_MODE" \
-              -e Smtp__Host="smtp.gmail.com" \
-              -e Smtp__Port="587" \
-              -e Smtp__Username="$SMTP_USERNAME" \
-              -e Smtp__Password="$SMTP_PASSWORD" \
-              -e Smtp__FromName="IECC Masjid" \
-              -e Smtp__FromEmail="$SMTP_FROM_EMAIL" \
-              -e Admin__Username="${ADMIN_USERNAME:-admin}" \
-              -e Admin__Password="$ADMIN_PASSWORD" \
+              -e PayPal__ClientId="$PAYPAL_CLIENT_ID" -e PayPal__ClientSecret="$PAYPAL_CLIENT_SECRET" -e PayPal__Mode="$PAYPAL_MODE" \
+              -e Smtp__Host="smtp.gmail.com" -e Smtp__Port="587" \
+              -e Smtp__Username="$SMTP_USERNAME" -e Smtp__Password="$SMTP_PASSWORD" \
+              -e Smtp__FromName="IECC Masjid" -e Smtp__FromEmail="$SMTP_FROM_EMAIL" \
+              -e Admin__Username="${ADMIN_USERNAME:-admin}" -e Admin__Password="$ADMIN_PASSWORD" \
               "$IMAGE"
 
-            echo "Waiting for app to respond..."
             sleep 10
-
-            echo "Container status:"
-            docker ps -a --filter "name=$CONTAINER_NAME" --filter "name=$POSTGRES_CONTAINER_NAME"
-
-            echo "Testing app on localhost..."
             APPREADY=0
             for i in $(seq 1 12); do
               curl -fsS "http://127.0.0.1:${HOST_PORT}" >/dev/null 2>&1 && APPREADY=1 && break || true
               sleep 5
             done
-            if [ "$APPREADY" -eq 0 ]; then
-              echo "ERROR: App did not respond after 60s."
-              docker inspect "$CONTAINER_NAME" --format='Status={{.State.Status}} ExitCode={{.State.ExitCode}}' || true
-              docker logs "$CONTAINER_NAME" --tail=200 || true
-              docker logs "$POSTGRES_CONTAINER_NAME" --tail=50 || true
-              exit 1
-            fi
-            echo "App is responding on http://127.0.0.1:${HOST_PORT}"
+            test "$APPREADY" -eq 1 || { docker logs "$CONTAINER_NAME" --tail=100; exit 1; }
+            echo "=== Deployed: http://127.0.0.1:${HOST_PORT} ==="
 
-            echo "Cleaning old images..."
             docker image prune -f
