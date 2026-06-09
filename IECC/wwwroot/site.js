@@ -88,9 +88,13 @@ const NAV_HTML = `<nav class="site-nav" id="site-nav">
     <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
     <ul class="nav-menu" id="nav-menu">
       <li><a href="/"                  data-href="index">Home</a></li>
-      <li><a href="/about.html"        data-href="about">About</a></li>
-      <li><a href="/bylaws.html"       data-href="bylaws">By-Laws</a></li>
-      <li><a href="/articles-of-organization.html" data-href="articles-of-organization">Articles</a></li>
+      <li class="nav-has-dropdown">
+        <a href="/about.html" data-href="about">About <span class="nav-arrow">▾</span></a>
+        <ul class="nav-dropdown">
+          <li><a href="/bylaws.html" data-href="bylaws">By-Laws</a></li>
+          <li><a href="/articles-of-organization.html" data-href="articles-of-organization">Articles of Org.</a></li>
+        </ul>
+      </li>
       <li><a href="/prayer-times.html" data-href="prayer-times">Prayer Times</a></li>
       <li><a href="/programs.html"     data-href="programs">Programs</a></li>
       <li><a href="/events.html"       data-href="events">Events</a></li>
