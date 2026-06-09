@@ -152,6 +152,14 @@
           <div class="hs-caption">📖 Quran, Arabic &amp; Islamic education for all ages</div>
         </div>
 
+        <!-- Slide 4: YouTube Video -->
+        <div class="hs-slide">
+          <div class="hs-yt-wrap">
+            <iframe class="hs-yt-frame" src="" data-src="https://www.youtube.com/embed/k-GrP3toRNs?rel=0&modestbranding=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="hs-caption">▶ Watch Our Masjid Story</div>
+        </div>
+
         <!-- Controls -->
         <button class="hs-prev" onclick="hsNav(-1)" aria-label="Previous slide">&#8249;</button>
         <button class="hs-next" onclick="hsNav(1)"  aria-label="Next slide">&#8250;</button>
@@ -161,6 +169,7 @@
           <button class="hs-dot active" onclick="hsGo(0)" aria-label="Slide 1"></button>
           <button class="hs-dot" onclick="hsGo(1)" aria-label="Slide 2"></button>
           <button class="hs-dot" onclick="hsGo(2)" aria-label="Slide 3"></button>
+          <button class="hs-dot" onclick="hsGo(3)" aria-label="Slide 4"></button>
         </div>
       </div>
     </div>
@@ -286,6 +295,8 @@
   var slides, dots, cur = 0, timer;
 
   function goTo(n) {
+    var prevFrame = slides[cur].querySelector('iframe');
+    if (prevFrame) { prevFrame.src = ''; }
     slides[cur].classList.remove('active');
     dots[cur].classList.remove('active');
     cur = (n + slides.length) % slides.length;
@@ -293,7 +304,13 @@
     dots[cur].classList.add('active');
     var vid = slides[cur].querySelector('video');
     if (vid) { vid.currentTime = 0; vid.play().catch(function(){}); }
-    reset();
+    var frame = slides[cur].querySelector('iframe');
+    if (frame && frame.dataset.src) {
+      frame.src = frame.dataset.src;
+      clearInterval(timer);
+    } else {
+      reset();
+    }
   }
 
   function reset() {
