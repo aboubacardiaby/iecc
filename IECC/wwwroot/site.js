@@ -89,6 +89,7 @@ const NAV_HTML = `<nav class="site-nav" id="site-nav">
     <ul class="nav-menu" id="nav-menu">
       <li><a href="/"                  data-href="index">Home</a></li>
       <li><a href="/about.html"        data-href="about">About</a></li>
+      <li><a href="/bylaws.html"       data-href="bylaws">By-Laws</a></li>
       <li><a href="/prayer-times.html" data-href="prayer-times">Prayer Times</a></li>
       <li><a href="/programs.html"     data-href="programs">Programs</a></li>
       <li><a href="/events.html"       data-href="events">Events</a></li>
@@ -117,6 +118,7 @@ const FOOTER_HTML = `<footer class="site-footer">
       <ul class="footer-links">
         <li><a href="/">Home</a></li>
         <li><a href="/about.html">About Us</a></li>
+        <li><a href="/bylaws.html">By-Laws</a></li>
         <li><a href="/prayer-times.html">Prayer Times</a></li>
         <li><a href="/programs.html">Programs</a></li>
       </ul>
