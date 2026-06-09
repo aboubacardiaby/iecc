@@ -1,5 +1,5 @@
 /* ── Campaign data ───────────────────────────────────── */
-const CAMPAIGN = { goal: 350000, raised: 206000 };
+const CAMPAIGN = { goal: 600000, raised: 206000 };
 
 const NEEDS = [
   { icon: '🔥', label: 'Fire Sprinkler System Installation' },

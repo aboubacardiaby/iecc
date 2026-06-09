@@ -319,7 +319,7 @@ function renderPrayerPage() {
 function _initCampaignBar() {
   const bar = document.getElementById('home-camp-bar');
   if (!bar) return;
-  const pct = Math.round(206000/350000*100);
+  const pct = Math.round(206000/600000*100);
   requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.width = pct + '%'; }));
 }
 
