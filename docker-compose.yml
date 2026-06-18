@@ -5,7 +5,7 @@ services:
       - "5000:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=ieccmndb;Username=ieccmnsvc;Password=Minneapolis2@;SSL Mode=Disable"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=iecc;Username=iecc;Password=MyM@sjid#2026!;SSL Mode=Disable"
       Admin__Username: admin
       Admin__Password: Minneapolis2@
     depends_on:
@@ -18,13 +18,13 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: ieccmndb
-      POSTGRES_USER: ieccmnsvc
-      POSTGRES_PASSWORD: Minneapolis2@
+      POSTGRES_DB: iecc
+      POSTGRES_USER: iecc
+      POSTGRES_PASSWORD: MyM@sjid#2026!
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ieccmnsvc -d ieccmndb"]
+      test: ["CMD-SHELL", "pg_isready -U iecc -d iecc"]
       interval: 5s
       timeout: 5s
       retries: 10
