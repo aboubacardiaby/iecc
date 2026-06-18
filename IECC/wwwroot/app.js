@@ -136,6 +136,7 @@ async function initPayPal() {
     ppSDKLoading = true;
     try {
       const res = await fetch('/api/paypal/client-id');
+      if (!res.ok) throw new Error(`API error ${res.status}`);
       const { clientId } = await res.json();
       if (!clientId || clientId.startsWith('YOUR_')) {
         if (loading) loading.textContent = 'PayPal is not yet configured.';
@@ -145,12 +146,13 @@ async function initPayPal() {
         const s = document.createElement('script');
         s.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&intent=capture`;
         s.onload = resolve;
-        s.onerror = reject;
+        s.onerror = () => reject(new Error(`PayPal SDK failed to load — client ID may be invalid or expired`));
         document.head.appendChild(s);
       });
       ppSDKLoaded = true;
-    } catch {
-      if (loading) loading.textContent = 'Failed to load PayPal. Please try another method.';
+    } catch (err) {
+      console.error('[PayPal]', err?.message || err);
+      if (loading) loading.textContent = 'PayPal credentials are invalid or expired. Please contact the admin.';
       ppSDKLoading = false;
       return;
     }

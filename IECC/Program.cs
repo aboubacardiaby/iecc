@@ -70,12 +70,9 @@ var tokenLock          = new SemaphoreSlim(1, 1);
 async Task<(string clientId, string clientSecret, string ppBase)> GetPP(IeccDbContext db)
 {
     var s = await db.PaypalSettings.FirstOrDefaultAsync();
-    if (s is not null && !string.IsNullOrWhiteSpace(s.ClientId))
-        return (s.ClientId, s.ClientSecret, s.Mode == "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com");
-    var id     = app.Configuration["PayPal:ClientId"]     ?? "";
-    var secret = app.Configuration["PayPal:ClientSecret"] ?? "";
-    var mode   = app.Configuration["PayPal:Mode"]         ?? "sandbox";
-    return (id, secret, mode == "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com");
+    if (s is null || string.IsNullOrWhiteSpace(s.ClientId))
+        throw new InvalidOperationException("PayPal settings have not been configured. Please set them in Admin → Settings.");
+    return (s.ClientId, s.ClientSecret, s.Mode == "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com");
 }
 
 async Task<string> GetToken(IHttpClientFactory f, string clientId, string clientSecret, string ppBase)
@@ -105,8 +102,8 @@ async Task<string> GetToken(IHttpClientFactory f, string clientId, string client
 
 app.MapGet("/api/paypal/client-id", async (IeccDbContext db) =>
 {
-    var (clientId, _, _) = await GetPP(db);
-    return Results.Ok(new { clientId });
+    var s = await db.PaypalSettings.FirstOrDefaultAsync();
+    return Results.Ok(new { clientId = s?.ClientId ?? "" });
 });
 
 app.MapPost("/api/paypal/create-order", async (CreateOrderRequest req, IHttpClientFactory f, IeccDbContext db) =>

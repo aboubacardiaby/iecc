@@ -15,23 +15,16 @@ public record ReceiptRequest(
     string  TransactionId
 );
 
-public class ReceiptService(IConfiguration config, ILogger<ReceiptService> logger, IServiceScopeFactory scopeFactory)
+public class ReceiptService(ILogger<ReceiptService> logger, IServiceScopeFactory scopeFactory)
 {
     private async Task<(string host, int port, string user, string pass, string fromName, string fromEmail)> LoadSmtpAsync()
     {
         await using var scope = scopeFactory.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<IeccDbContext>();
         var s = await db.SmtpSettings.FirstOrDefaultAsync();
-        if (s is not null && !string.IsNullOrWhiteSpace(s.Host))
-            return (s.Host, s.Port, s.Username, s.Password, s.FromName, s.FromEmail);
-        return (
-            config["Smtp:Host"]      ?? throw new InvalidOperationException("SMTP host not configured"),
-            int.Parse(config["Smtp:Port"] ?? "587"),
-            config["Smtp:Username"]  ?? throw new InvalidOperationException("SMTP username not configured"),
-            config["Smtp:Password"]  ?? throw new InvalidOperationException("SMTP password not configured"),
-            config["Smtp:FromName"]  ?? "IECC Masjid",
-            config["Smtp:FromEmail"] ?? config["Smtp:Username"] ?? ""
-        );
+        if (s is null || string.IsNullOrWhiteSpace(s.Host))
+            throw new InvalidOperationException("SMTP settings have not been configured. Please set them in Admin → Settings.");
+        return (s.Host, s.Port, s.Username, s.Password, s.FromName, s.FromEmail);
     }
 
     public byte[] GeneratePdf(ReceiptRequest req)
