@@ -5,7 +5,7 @@ services:
       - "5000:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=iecc;Username=iecc;Password=devpassword123"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=ieccmndb;Username=ieccmnsvc;Password=Minneapolis2@"
       PayPal__ClientId: ""
       PayPal__ClientSecret: ""
       PayPal__Mode: sandbox
@@ -25,13 +25,13 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: iecc
-      POSTGRES_USER: iecc
-      POSTGRES_PASSWORD: devpassword123
+      POSTGRES_DB: ieccmndb
+      POSTGRES_USER: ieccmnsvc
+      POSTGRES_PASSWORD: Minneapolis2@
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U iecc -d iecc"]
+      test: ["CMD-SHELL", "pg_isready -U ieccmnsvc -d ieccmndb"]
       interval: 5s
       timeout: 5s
       retries: 10

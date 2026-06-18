@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Settings – IECC Admin</title>
+  <link rel="stylesheet" href="admin.css"/>
+  <style>
+    .scard{background:#fff;border-radius:8px;border:1px solid var(--border);margin-bottom:18px;overflow:hidden}
+    .scard-hd{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+    .scard-hd-icon{font-size:1.2rem}
+    .scard-hd h2{font-size:.93rem;font-weight:700;margin:0}
+    .scard-hd p{font-size:.78rem;color:var(--muted);margin:2px 0 0}
+    .scard-body{padding:20px}
+    .test-result{margin-top:12px;padding:10px 14px;border-radius:6px;font-size:.83rem;display:none}
+    .test-result.ok{background:var(--success-lt);color:#166534;display:block}
+    .test-result.err{background:var(--danger-lt);color:#991b1b;display:block}
+    .pwd-hint{font-size:.72rem;color:var(--muted);margin-top:3px}
+  </style>
+</head>
+<body>
+<div class="al">
+  <div id="sb-ph"></div>
+  <div class="am">
+    <header class="ah">
+      <h1 class="page-title">Settings</h1>
+      <div class="hdr-right"><span class="hdr-user"><strong id="admin-username"></strong></span><button class="btn-logout" onclick="logout()">Logout</button></div>
+    </header>
+    <main class="ac">
+
+      <!-- PayPal Settings -->
+      <div class="scard">
+        <div class="scard-hd">
+          <span class="scard-hd-icon">💳</span>
+          <div>
+            <h2>PayPal Integration</h2>
+            <p>API credentials for processing online donations via PayPal.</p>
+          </div>
+        </div>
+        <div class="scard-body">
+          <form id="paypal-form" onsubmit="savePaypal(event)">
+            <div class="fg">
+              <label class="fl">Client ID</label>
+              <input class="fi2" id="pp-client-id" placeholder="AQ4R_dm-ABNFgKWv7…" required/>
+            </div>
+            <div class="fg">
+              <label class="fl">Client Secret</label>
+              <input class="fi2" id="pp-client-secret" type="password" placeholder="Leave blank to keep existing"/>
+              <div class="pwd-hint" id="pp-secret-hint" style="display:none">✓ Client secret already saved — leave blank to keep it</div>
+            </div>
+            <div class="fg">
+              <label class="fl">Mode</label>
+              <select class="fs2" id="pp-mode">
+                <option value="sandbox">Sandbox (Testing)</option>
+                <option value="live">Live (Production)</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:9px;align-items:center;margin-top:4px">
+              <button class="btn btn-primary" type="submit" id="pp-save-btn">💾 Save Settings</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- SMTP Settings -->
+      <div class="scard">
+        <div class="scard-hd">
+          <span class="scard-hd-icon">📧</span>
+          <div>
+            <h2>SMTP / Email Server</h2>
+            <p>Configure the outgoing mail server used to send donation receipts and notifications.</p>
+          </div>
+        </div>
+        <div class="scard-body">
+          <form id="smtp-form" onsubmit="saveSmtp(event)">
+            <div class="frow" style="margin-bottom:13px">
+              <div class="fg" style="margin-bottom:0">
+                <label class="fl">SMTP Host</label>
+                <input class="fi2" id="smtp-host" placeholder="smtp.gmail.com" required/>
+              </div>
+              <div class="fg" style="margin-bottom:0">
+                <label class="fl">Port</label>
+                <input class="fi2" id="smtp-port" type="number" value="587" min="1" max="65535" required/>
+              </div>
+            </div>
+            <div class="frow" style="margin-bottom:13px">
+              <div class="fg" style="margin-bottom:0">
+                <label class="fl">Username</label>
+                <input class="fi2" id="smtp-user" placeholder="you@example.com" required/>
+              </div>
+              <div class="fg" style="margin-bottom:0">
+                <label class="fl">Password</label>
+                <input class="fi2" id="smtp-pass" type="password" placeholder="Leave blank to keep existing"/>
+                <div class="pwd-hint" id="pwd-hint" style="display:none">✓ Password already saved — leave blank to keep it</div>
+              </div>
+            </div>
+            <div class="frow" style="margin-bottom:13px">
+              <div class="fg" style="margin-bottom:0">
+                <label class="fl">From Name</label>
+                <input class="fi2" id="smtp-from-name" placeholder="IECC Masjid" required/>
+              </div>
+              <div class="fg" style="margin-bottom:0">
+                <label class="fl">From Email</label>
+                <input class="fi2" id="smtp-from-email" type="email" placeholder="noreply@iecc.org" required/>
+              </div>
+            </div>
+            <div style="display:flex;gap:9px;align-items:center;margin-top:4px">
+              <button class="btn btn-primary" type="submit" id="save-btn">💾 Save Settings</button>
+              <button class="btn btn-secondary" type="button" onclick="testSmtp()">🔌 Test Connection</button>
+            </div>
+            <div class="test-result" id="test-result"></div>
+          </form>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+<script src="admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!await requireAuth()) return;
+
+  // Load PayPal settings
+  const pp = await apiGet('/admin/api/settings/paypal');
+  if (pp) {
+    document.getElementById('pp-client-id').value = pp.clientId || '';
+    document.getElementById('pp-mode').value = pp.mode || 'sandbox';
+    if (pp.clientSecretSet) document.getElementById('pp-secret-hint').style.display = 'block';
+  }
+
+  // Load SMTP settings
+  const s = await apiGet('/admin/api/settings/smtp');
+  if (!s) return;
+  document.getElementById('smtp-host').value      = s.host      || '';
+  document.getElementById('smtp-port').value      = s.port      || 587;
+  document.getElementById('smtp-user').value      = s.username  || '';
+  document.getElementById('smtp-from-name').value = s.fromName  || 'IECC Masjid';
+  document.getElementById('smtp-from-email').value= s.fromEmail || '';
+  if (s.passwordSet) document.getElementById('pwd-hint').style.display = 'block';
+});
+
+async function savePaypal(e) {
+  e.preventDefault();
+  const btn = document.getElementById('pp-save-btn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const res = await apiPost('/admin/api/settings/paypal', {
+    clientId:     document.getElementById('pp-client-id').value.trim(),
+    clientSecret: document.getElementById('pp-client-secret').value,
+    mode:         document.getElementById('pp-mode').value,
+  });
+  btn.disabled = false; btn.textContent = '💾 Save Settings';
+  if (res) {
+    adminToast('PayPal settings saved');
+    document.getElementById('pp-secret-hint').style.display = 'block';
+    document.getElementById('pp-client-secret').value = '';
+  }
+}
+
+async function saveSmtp(e) {
+  e.preventDefault();
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const res = await apiPost('/admin/api/settings/smtp', {
+    host:      document.getElementById('smtp-host').value.trim(),
+    port:      parseInt(document.getElementById('smtp-port').value),
+    username:  document.getElementById('smtp-user').value.trim(),
+    password:  document.getElementById('smtp-pass').value,
+    fromName:  document.getElementById('smtp-from-name').value.trim(),
+    fromEmail: document.getElementById('smtp-from-email').value.trim(),
+  });
+  btn.disabled = false; btn.textContent = '💾 Save Settings';
+  if (res) {
+    adminToast('SMTP settings saved');
+    document.getElementById('pwd-hint').style.display = 'block';
+    document.getElementById('smtp-pass').value = '';
+  }
+}
+
+async function testSmtp() {
+  const el = document.getElementById('test-result');
+  el.className = 'test-result'; el.textContent = 'Testing…'; el.style.display = 'block';
+  try {
+    const res = await fetch('/admin/api/settings/smtp/test', { method: 'POST' });
+    if (res.ok) { el.className = 'test-result ok'; el.textContent = '✓ Connection successful — test email sent to the From address.'; }
+    else { const e = await res.json().catch(()=>({})); el.className = 'test-result err'; el.textContent = '✗ ' + (e.detail || e.error || 'Connection failed'); }
+  } catch { el.className = 'test-result err'; el.textContent = '✗ Network error'; }
+}
+</script>
+</body>
+</html>

@@ -17,6 +17,8 @@ const SIDEBAR = `<aside class="as" id="admin-sidebar">
     <div class="sb-sec">Content</div>
     <a class="sb-link" href="/admin/events.html"     data-p="events"><span class="sb-link-ic">📅</span> Events</a>
     <a class="sb-link" href="/admin/newsletter.html" data-p="newsletter"><span class="sb-link-ic">📨</span> Newsletter</a>
+    <div class="sb-sec">System</div>
+    <a class="sb-link" href="/admin/settings.html" data-p="settings"><span class="sb-link-ic">⚙️</span> Settings</a>
     <div class="sb-sec">Site</div>
     <a class="sb-link" href="/" target="_blank"><span class="sb-link-ic">🌐</span> View Site ↗</a>
     <button class="sb-link" onclick="logout()"><span class="sb-link-ic">🚪</span> Logout</button>

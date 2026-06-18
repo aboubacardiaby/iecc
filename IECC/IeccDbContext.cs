@@ -63,6 +63,25 @@ public class CommunityEvent
     public DateTime  CreatedAt   { get; set; } = DateTime.UtcNow;
 }
 
+public class PaypalSetting
+{
+    public int    Id           { get; set; }
+    public string ClientId     { get; set; } = "";
+    public string ClientSecret { get; set; } = "";
+    public string Mode         { get; set; } = "sandbox"; // sandbox | live
+}
+
+public class SmtpSetting
+{
+    public int    Id        { get; set; }
+    public string Host      { get; set; } = "";
+    public int    Port      { get; set; } = 587;
+    public string Username  { get; set; } = "";
+    public string Password  { get; set; } = "";
+    public string FromName  { get; set; } = "IECC Masjid";
+    public string FromEmail { get; set; } = "";
+}
+
 // ── DbContext ─────────────────────────────────────────────
 
 public class IeccDbContext(DbContextOptions<IeccDbContext> options) : DbContext(options)
@@ -72,6 +91,8 @@ public class IeccDbContext(DbContextOptions<IeccDbContext> options) : DbContext(
     public DbSet<VolunteerApplication>  VolunteerApplications  { get; set; }
     public DbSet<NewsletterSubscriber>  NewsletterSubscribers  { get; set; }
     public DbSet<CommunityEvent>        Events                 { get; set; }
+    public DbSet<SmtpSetting>           SmtpSettings           { get; set; }
+    public DbSet<PaypalSetting>         PaypalSettings         { get; set; }
 
     protected override void OnModelCreating(ModelBuilder mb)
     {

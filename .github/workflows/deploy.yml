@@ -3,7 +3,7 @@ name: Build and Deploy to Hostinger VPS
 on:
   push:
     branches:
-      - main
+      - feature-develop
   workflow_dispatch:
 
 env:

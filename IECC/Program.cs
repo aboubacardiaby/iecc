@@ -38,33 +38,41 @@ app.UseAuthorization();
 await using (var scope = app.Services.CreateAsyncScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<IeccDbContext>();
-    await db.Database.EnsureCreatedAsync();
+    await db.Database.MigrateAsync();
 }
 
-var ppClientId     = app.Configuration["PayPal:ClientId"]     ?? "";
-var ppClientSecret = app.Configuration["PayPal:ClientSecret"] ?? "";
-var ppMode         = app.Configuration["PayPal:Mode"]         ?? "sandbox";
-var ppBase         = ppMode == "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
+string? cachedToken    = null;
+string? cachedClientId = null;
+DateTime tokenExpiry   = DateTime.MinValue;
+var tokenLock          = new SemaphoreSlim(1, 1);
 
-string? cachedToken  = null;
-DateTime tokenExpiry = DateTime.MinValue;
-var tokenLock        = new SemaphoreSlim(1, 1);
-
-async Task<string> GetToken(IHttpClientFactory f)
+async Task<(string clientId, string clientSecret, string ppBase)> GetPP(IeccDbContext db)
 {
-    if (cachedToken is not null && DateTime.UtcNow < tokenExpiry) return cachedToken;
+    var s = await db.PaypalSettings.FirstOrDefaultAsync();
+    if (s is not null && !string.IsNullOrWhiteSpace(s.ClientId))
+        return (s.ClientId, s.ClientSecret, s.Mode == "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com");
+    var id     = app.Configuration["PayPal:ClientId"]     ?? "";
+    var secret = app.Configuration["PayPal:ClientSecret"] ?? "";
+    var mode   = app.Configuration["PayPal:Mode"]         ?? "sandbox";
+    return (id, secret, mode == "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com");
+}
+
+async Task<string> GetToken(IHttpClientFactory f, string clientId, string clientSecret, string ppBase)
+{
+    if (cachedToken is not null && cachedClientId == clientId && DateTime.UtcNow < tokenExpiry) return cachedToken;
     await tokenLock.WaitAsync();
     try
     {
-        if (cachedToken is not null && DateTime.UtcNow < tokenExpiry) return cachedToken;
+        if (cachedToken is not null && cachedClientId == clientId && DateTime.UtcNow < tokenExpiry) return cachedToken;
         using var client = f.CreateClient();
-        var creds = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ppClientId}:{ppClientSecret}"));
+        var creds = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:{clientSecret}"));
         client.DefaultRequestHeaders.Add("Authorization", $"Basic {creds}");
         var resp = await client.PostAsync($"{ppBase}/v1/oauth2/token",
             new FormUrlEncodedContent(new[] { new KeyValuePair<string, string>("grant_type", "client_credentials") }));
         using var doc = await JsonDocument.ParseAsync(await resp.Content.ReadAsStreamAsync());
-        cachedToken = doc.RootElement.GetProperty("access_token").GetString()!;
-        tokenExpiry = DateTime.UtcNow.AddSeconds(doc.RootElement.GetProperty("expires_in").GetInt32() - 60);
+        cachedToken    = doc.RootElement.GetProperty("access_token").GetString()!;
+        cachedClientId = clientId;
+        tokenExpiry    = DateTime.UtcNow.AddSeconds(doc.RootElement.GetProperty("expires_in").GetInt32() - 60);
         return cachedToken;
     }
     finally { tokenLock.Release(); }
@@ -74,11 +82,16 @@ async Task<string> GetToken(IHttpClientFactory f)
 // PUBLIC API
 // ════════════════════════════════════════════════════════════
 
-app.MapGet("/api/paypal/client-id", () => Results.Ok(new { clientId = ppClientId }));
-
-app.MapPost("/api/paypal/create-order", async (CreateOrderRequest req, IHttpClientFactory f) =>
+app.MapGet("/api/paypal/client-id", async (IeccDbContext db) =>
 {
-    var token = await GetToken(f);
+    var (clientId, _, _) = await GetPP(db);
+    return Results.Ok(new { clientId });
+});
+
+app.MapPost("/api/paypal/create-order", async (CreateOrderRequest req, IHttpClientFactory f, IeccDbContext db) =>
+{
+    var (clientId, clientSecret, ppBase) = await GetPP(db);
+    var token = await GetToken(f, clientId, clientSecret, ppBase);
     using var client = f.CreateClient();
     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
     var payload = JsonSerializer.Serialize(new { intent = "CAPTURE", purchase_units = new[] { new { amount = new { currency_code = "USD", value = req.Amount.ToString("F2") }, description = "IECC Masjid Donation" } } });
@@ -87,9 +100,10 @@ app.MapPost("/api/paypal/create-order", async (CreateOrderRequest req, IHttpClie
     return Results.Ok(new { id = doc.RootElement.GetProperty("id").GetString() });
 });
 
-app.MapPost("/api/paypal/capture-order/{orderId}", async (string orderId, IHttpClientFactory f, IeccDbContext db) =>
+app.MapPost("/api/paypal/capture-order/{orderId}", async (string orderId, IHttpClientFactory f, IeccDbContext db, ReceiptService receipt) =>
 {
-    var token = await GetToken(f);
+    var (clientId, clientSecret, ppBase) = await GetPP(db);
+    var token = await GetToken(f, clientId, clientSecret, ppBase);
     using var client = f.CreateClient();
     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
     client.DefaultRequestHeaders.Add("PayPal-Request-Id", Guid.NewGuid().ToString());
@@ -110,6 +124,11 @@ app.MapPost("/api/paypal/capture-order/{orderId}", async (string orderId, IHttpC
     {
         db.Donations.Add(new Donation { DonorName = payerName, DonorEmail = payerEmail, Amount = amount, Method = "PayPal", Frequency = "one-time", TransactionId = orderId, Status = "completed" });
         await db.SaveChangesAsync();
+        if (!string.IsNullOrWhiteSpace(payerEmail))
+        {
+            var req = new ReceiptRequest(payerName ?? "Anonymous", payerEmail, amount, "PayPal", "one-time", orderId);
+            _ = Task.Run(async () => { try { var pdf = receipt.GeneratePdf(req); await receipt.SendAsync(req, pdf); } catch (Exception ex) { app.Logger.LogError(ex, "PayPal receipt failed for {Email}", payerEmail); } });
+        }
         return Results.Ok(new { status, payerEmail, payerName });
     }
     return Results.BadRequest(new { status });
@@ -290,6 +309,62 @@ adm.MapDelete("/events/{id:guid}", async (Guid id, IeccDbContext db) =>
     db.Events.Remove(ev); await db.SaveChangesAsync(); return Results.Ok();
 });
 
+adm.MapGet("/settings/paypal", async (IeccDbContext db) =>
+{
+    var s = await db.PaypalSettings.FirstOrDefaultAsync();
+    if (s is null) return Results.Ok(new { clientId = "", clientSecretSet = false, mode = "sandbox" });
+    return Results.Ok(new { s.ClientId, clientSecretSet = !string.IsNullOrEmpty(s.ClientSecret), s.Mode });
+});
+
+adm.MapPost("/settings/paypal", async (PaypalSettingRequest req, IeccDbContext db) =>
+{
+    var s = await db.PaypalSettings.FirstOrDefaultAsync();
+    if (s is null) { s = new PaypalSetting(); db.PaypalSettings.Add(s); }
+    s.ClientId = req.ClientId;
+    s.Mode     = req.Mode;
+    if (!string.IsNullOrEmpty(req.ClientSecret)) s.ClientSecret = req.ClientSecret;
+    await db.SaveChangesAsync();
+    cachedToken = null; // invalidate cached token when credentials change
+    return Results.Ok(new { saved = true });
+});
+
+adm.MapGet("/settings/smtp", async (IeccDbContext db) =>
+{
+    var s = await db.SmtpSettings.FirstOrDefaultAsync();
+    if (s is null) return Results.Ok(new { host = "", port = 587, username = "", passwordSet = false, fromName = "IECC Masjid", fromEmail = "" });
+    return Results.Ok(new { s.Host, s.Port, s.Username, passwordSet = !string.IsNullOrEmpty(s.Password), s.FromName, s.FromEmail });
+});
+
+adm.MapPost("/settings/smtp", async (SmtpSettingRequest req, IeccDbContext db) =>
+{
+    var s = await db.SmtpSettings.FirstOrDefaultAsync();
+    if (s is null) { s = new SmtpSetting(); db.SmtpSettings.Add(s); }
+    s.Host = req.Host; s.Port = req.Port; s.Username = req.Username;
+    s.FromName = req.FromName; s.FromEmail = req.FromEmail;
+    if (!string.IsNullOrEmpty(req.Password)) s.Password = req.Password;
+    await db.SaveChangesAsync();
+    return Results.Ok(new { saved = true });
+});
+
+adm.MapPost("/settings/smtp/test", async (IeccDbContext db, ReceiptService receipt) =>
+{
+    var s = await db.SmtpSettings.FirstOrDefaultAsync();
+    if (s is null || string.IsNullOrWhiteSpace(s.Host)) return Results.BadRequest(new { error = "SMTP settings not configured yet" });
+    var req = new ReceiptRequest("IECC Admin", s.FromEmail, 0m, "Test", "one-time", "TEST-" + DateTime.UtcNow.Ticks);
+    try { var pdf = receipt.GeneratePdf(req); await receipt.SendAsync(req, pdf); return Results.Ok(new { sent = true }); }
+    catch (Exception ex) { return Results.Problem(ex.Message); }
+});
+
+adm.MapPost("/donations/{id:guid}/resend-receipt", async (Guid id, IeccDbContext db, ReceiptService receipt) =>
+{
+    var d = await db.Donations.FindAsync(id);
+    if (d is null) return Results.NotFound();
+    if (string.IsNullOrWhiteSpace(d.DonorEmail)) return Results.BadRequest(new { error = "No email on record for this donor" });
+    var req = new ReceiptRequest(d.DonorName ?? "Anonymous", d.DonorEmail, d.Amount, d.Method, d.Frequency, d.TransactionId ?? d.Id.ToString());
+    try { var pdf = receipt.GeneratePdf(req); await receipt.SendAsync(req, pdf); return Results.Ok(new { sent = true }); }
+    catch (Exception ex) { return Results.Problem(ex.Message); }
+});
+
 app.Run();
 
 record CreateOrderRequest(decimal Amount);
@@ -300,3 +375,5 @@ record ZelleDonationRequest(string? DonorName, string? DonorEmail, decimal Amoun
 record LoginRequest(string Username, string Password);
 record UpdateStatusRequest(string Status);
 record EventRequest(string Title, string? Description, string Category, DateOnly EventDate, TimeOnly? StartTime, TimeOnly? EndTime, string? Location, bool IsPublished);
+record SmtpSettingRequest(string Host, int Port, string Username, string Password, string FromName, string FromEmail);
+record PaypalSettingRequest(string ClientId, string ClientSecret, string Mode);

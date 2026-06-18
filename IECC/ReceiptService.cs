@@ -1,4 +1,5 @@
 using MailKit.Net.Smtp;
+using Microsoft.EntityFrameworkCore;
 using MailKit.Security;
 using MimeKit;
 using QuestPDF.Fluent;
@@ -14,8 +15,25 @@ public record ReceiptRequest(
     string  TransactionId
 );
 
-public class ReceiptService(IConfiguration config, ILogger<ReceiptService> logger)
+public class ReceiptService(IConfiguration config, ILogger<ReceiptService> logger, IServiceScopeFactory scopeFactory)
 {
+    private async Task<(string host, int port, string user, string pass, string fromName, string fromEmail)> LoadSmtpAsync()
+    {
+        await using var scope = scopeFactory.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<IeccDbContext>();
+        var s = await db.SmtpSettings.FirstOrDefaultAsync();
+        if (s is not null && !string.IsNullOrWhiteSpace(s.Host))
+            return (s.Host, s.Port, s.Username, s.Password, s.FromName, s.FromEmail);
+        return (
+            config["Smtp:Host"]      ?? throw new InvalidOperationException("SMTP host not configured"),
+            int.Parse(config["Smtp:Port"] ?? "587"),
+            config["Smtp:Username"]  ?? throw new InvalidOperationException("SMTP username not configured"),
+            config["Smtp:Password"]  ?? throw new InvalidOperationException("SMTP password not configured"),
+            config["Smtp:FromName"]  ?? "IECC Masjid",
+            config["Smtp:FromEmail"] ?? config["Smtp:Username"] ?? ""
+        );
+    }
+
     public byte[] GeneratePdf(ReceiptRequest req)
     {
         var receiptNum = $"IECC-{DateTime.UtcNow:yyyyMMdd}-{req.TransactionId[..Math.Min(8, req.TransactionId.Length)].ToUpper()}";
@@ -137,12 +155,7 @@ public class ReceiptService(IConfiguration config, ILogger<ReceiptService> logge
 
     public async Task SendAsync(ReceiptRequest req, byte[] pdf)
     {
-        var host      = config["Smtp:Host"]      ?? throw new InvalidOperationException("SMTP host not configured");
-        var port      = int.Parse(config["Smtp:Port"] ?? "587");
-        var user      = config["Smtp:Username"]  ?? throw new InvalidOperationException("SMTP username not configured");
-        var pass      = config["Smtp:Password"]  ?? throw new InvalidOperationException("SMTP password not configured");
-        var fromName  = config["Smtp:FromName"]  ?? "IECC Masjid";
-        var fromEmail = config["Smtp:FromEmail"] ?? user;
+        var (host, port, user, pass, fromName, fromEmail) = await LoadSmtpAsync();
 
         var donor      = string.IsNullOrWhiteSpace(req.DonorName) ? "Valued Donor" : req.DonorName;
         var freqLabel  = req.Frequency == "monthly" ? "Monthly Recurring" : "One-Time";
@@ -209,7 +222,7 @@ public class ReceiptService(IConfiguration config, ILogger<ReceiptService> logge
         msg.Body = body.ToMessageBody();
 
         using var smtp = new SmtpClient();
-        await smtp.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+        await smtp.ConnectAsync(host, port, SecureSocketOptions.Auto);
         await smtp.AuthenticateAsync(user, pass);
         await smtp.SendAsync(msg);
         await smtp.DisconnectAsync(true);
