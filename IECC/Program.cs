@@ -178,7 +178,10 @@ app.MapPost("/api/paypal/capture-order/{orderId}", async (string orderId, IHttpC
         if (!string.IsNullOrWhiteSpace(payerEmail))
         {
             var req = new ReceiptRequest(payerName ?? "Anonymous", payerEmail, amount, "PayPal", "one-time", orderId);
-            _ = Task.Run(async () => { try { var pdf = receipt.GeneratePdf(req); await receipt.SendAsync(req, pdf); } catch (Exception ex) { app.Logger.LogError(ex, "PayPal receipt failed for {Email}", payerEmail); } });
+            _ = Task.Run(async () => {
+                try { var pdf = receipt.GeneratePdf(req); await receipt.SendAsync(req, pdf); app.Logger.LogInformation("Receipt sent to {Email}", payerEmail); }
+                catch (Exception ex) { app.Logger.LogError(ex, "Receipt failed for {Email} — check SMTP settings in Admin → Settings", payerEmail); }
+            });
         }
         return Results.Ok(new { status, payerEmail, payerName });
     }

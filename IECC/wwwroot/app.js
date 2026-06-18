@@ -178,14 +178,7 @@ async function initPayPal() {
       if (res.ok) {
         const captured = await res.json();
         showConfirmation('paypal', captured.payerEmail);
-        sendReceipt({
-          donorName:     captured.payerName  || '',
-          donorEmail:    captured.payerEmail || '',
-          amount:        selectedAmount,
-          method:        'PayPal',
-          frequency:     selectedFreq,
-          transactionId: data.orderID
-        });
+        // Receipt is sent server-side automatically after capture
       } else {
         showToast('Payment could not be completed. Please try again.');
       }
