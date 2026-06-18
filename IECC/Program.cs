@@ -44,8 +44,10 @@ await using (var scope = app.Services.CreateAsyncScope())
     }
     catch (Npgsql.PostgresException ex) when (ex.SqlState == "42P07")
     {
-        // Tables already exist from a prior EnsureCreated run (no migration history).
-        // Create the history table and mark all migrations as applied without re-running them.
+        // Original tables exist from EnsureCreated with no migration history.
+        // Create the history table, mark only InitialCreate as applied (those
+        // tables already exist), then re-run MigrateAsync to create any new tables
+        // added after the initial schema (e.g. SmtpSettings, PaypalSettings).
         await db.Database.ExecuteSqlRawAsync("""
             CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
                 "MigrationId"    character varying(150) NOT NULL,
@@ -53,12 +55,13 @@ await using (var scope = app.Services.CreateAsyncScope())
                 CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
             )
             """);
-        foreach (var m in db.Database.GetMigrations())
-            await db.Database.ExecuteSqlRawAsync($"""
-                INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-                VALUES ('{m}', '8.0.11')
-                ON CONFLICT DO NOTHING
-                """);
+        var initialMigration = db.Database.GetMigrations().First();
+        await db.Database.ExecuteSqlRawAsync($"""
+            INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+            VALUES ('{initialMigration}', '8.0.11')
+            ON CONFLICT DO NOTHING
+            """);
+        await db.Database.MigrateAsync();
     }
 }
 
