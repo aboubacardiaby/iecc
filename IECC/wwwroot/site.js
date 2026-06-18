@@ -403,12 +403,12 @@ function _initContactForm() {
 }
 
 function _initVolunteerForm() {
-  const form = document.getElementById('volunteer-form');
+  const form = document.getElementById('volunteer-application');
   if (!form) return;
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const fd = new FormData(form);
-    await _postForm('/api/volunteer', { name: fd.get('name'), email: fd.get('email'), phone: fd.get('phone') || '', role: fd.get('role'), availability: fd.get('availability') || '', message: fd.get('message') || '' }, form, document.getElementById('volunteer-success'));
+    await _postForm('/api/volunteer', { name: fd.get('name'), email: fd.get('email'), phone: fd.get('phone') || '', role: fd.get('role'), availability: fd.get('availability') || '', message: fd.get('message') || '' }, form, document.getElementById('volunteer-application-success'));
   });
 }
 

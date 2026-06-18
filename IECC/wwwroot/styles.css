@@ -1637,13 +1637,9 @@ body {
 
 /* ── CAMPAIGN ─────────────────────────────────────────── */
 .lp-campaign {
-  background: linear-gradient(135deg, #0d1e16 0%, #1a3d28 60%, #162c38 100%);
-}
-
-.lp-campaign .lp-section-inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  gap: 52px;
   align-items: start;
 }
 
@@ -1997,7 +1993,7 @@ body {
   .lp-hero-art      { max-width: 420px; margin: 0 auto; }
 
   .lp-about .lp-section-inner { grid-template-columns: 1fr; gap: 36px; }
-  .lp-campaign .lp-section-inner { grid-template-columns: 1fr; gap: 36px; }
+  .lp-campaign { grid-template-columns: 1fr; gap: 32px; }
 
   .lp-programs-grid { grid-template-columns: repeat(2, 1fr); }
   .lp-contact-grid  { grid-template-columns: repeat(2, 1fr); }

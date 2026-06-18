@@ -136,12 +136,27 @@ table.at{width:100%;border-collapse:collapse}
 .empty-icon{font-size:2.2rem;margin-bottom:8px;opacity:.35}
 .empty-text{font-size:.88rem}
 
+/* ── Sidebar overlay (mobile) ─────────────────────────── */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99}
+.sb-overlay.open{display:block}
+
+/* ── Hamburger toggle ─────────────────────────────────── */
+.sb-toggle{display:none;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:var(--text);padding:6px 8px;margin-right:4px;border-radius:5px;line-height:1;font-size:1.25rem;flex-shrink:0}
+.sb-toggle:hover{background:var(--border)}
+
+/* ── Dashboard grids ──────────────────────────────────── */
+.dash-grid{display:grid;gap:18px}
+.dash-grid-2{grid-template-columns:1.3fr 1fr}
+.dash-grid-half{grid-template-columns:1fr 1fr}
+
 /* ── Responsive ───────────────────────────────────────── */
 @media(max-width:900px){
-  .as{transform:translateX(-100%);transition:transform .25s}
+  .as{transform:translateX(-100%);transition:transform .25s;z-index:100}
   .as.open{transform:translateX(0)}
   .am{margin-left:0}
   .stats-grid{grid-template-columns:1fr 1fr}
+  .sb-toggle{display:inline-flex}
+  .dash-grid-2,.dash-grid-half{grid-template-columns:1fr}
 }
 @media(max-width:600px){
   .stats-grid{grid-template-columns:1fr}

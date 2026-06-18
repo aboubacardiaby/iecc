@@ -30,6 +30,30 @@ const SIDEBAR = `<aside class="as" id="admin-sidebar">
 async function requireAuth() {
   const ph = document.getElementById('sb-ph');
   if (ph) ph.outerHTML = SIDEBAR;
+
+  // Inject hamburger button + overlay for mobile
+  const header = document.querySelector('.ah');
+  if (header) {
+    const toggle = document.createElement('button');
+    toggle.className = 'sb-toggle';
+    toggle.setAttribute('aria-label', 'Toggle menu');
+    toggle.innerHTML = '&#9776;';
+    header.insertBefore(toggle, header.firstChild);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'sb-overlay';
+    overlay.id = 'sb-overlay';
+    document.body.appendChild(overlay);
+
+    const sidebar = document.getElementById('admin-sidebar');
+    const closeSidebar = () => { sidebar.classList.remove('open'); overlay.classList.remove('open'); };
+    toggle.addEventListener('click', () => {
+      const isOpen = sidebar.classList.toggle('open');
+      overlay.classList.toggle('open', isOpen);
+    });
+    overlay.addEventListener('click', closeSidebar);
+  }
+
   try {
     const res = await fetch('/admin/api/me');
     if (!res.ok) { location.href = '/admin/'; return null; }
