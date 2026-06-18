@@ -11,11 +11,11 @@ const NEEDS = [
   { icon: '🚿', label: 'Wudu Facilities' }
 ];
 
-const PRESET_AMOUNTS = [100, 250, 500, 1000, 2500, 5000];
-const MIN_DONATION = 100;
+const PRESET_AMOUNTS = [5, 25, 50, 100, 250, 500];
+const MIN_DONATION = 5;
 
 /* ── Modal state ─────────────────────────────────────── */
-let selectedAmount = 100;
+let selectedAmount = 5;
 let selectedFreq   = 'one-time';
 let selectedTab    = 'zelle';
 

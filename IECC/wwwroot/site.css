@@ -165,6 +165,7 @@ body {
 .form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--c-green); }
 .form-textarea { resize:vertical; min-height:130px; }
 .form-success { display:none; padding:14px 18px; background:var(--c-g-light); border:1px solid #b0d8b8; border-radius:5px; color:var(--c-g-dark); font-weight:600; text-align:center; font-size:.9rem; margin-top:14px; }
+.field-error { display:block; font-size:.72rem; color:#ef4444; margin-top:4px; font-weight:600; }
 
 /* ── PRAYER STRIP ─────────────────────────────────────── */
 .prayer-strip { background:var(--c-navy); border-bottom:2px solid var(--c-gold); overflow-x:auto; scrollbar-width:none; }

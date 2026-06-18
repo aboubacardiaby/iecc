@@ -170,7 +170,7 @@ const MODAL_HTML = `
     <div class="modal-section">
       <p class="modal-label">Select Amount</p>
       <div class="modal-amounts" id="modal-amounts"></div>
-      <div class="modal-custom"><span class="custom-dollar">$</span><input type="number" id="custom-amt" placeholder="Other amount (min $100)" min="100" oninput="handleCustomAmt(this)"/></div>
+      <div class="modal-custom"><span class="custom-dollar">$</span><input type="number" id="custom-amt" placeholder="Other amount (min $5)" min="5" oninput="handleCustomAmt(this)"/></div>
     </div>
     <div class="modal-section">
       <p class="modal-label">Payment Method</p>
@@ -375,20 +375,36 @@ function _initDonateAmounts() {
   dfreq.forEach(b => b.addEventListener('click', () => { dfreq.forEach(x => x.classList.remove('active')); b.classList.add('active'); }));
 }
 
-/* ── Form handlers ────────────────────────────────────── */
+/* ── Form helpers ─────────────────────────────────────── */
+function _formError(field, msg) {
+  field.style.borderColor = '#ef4444';
+  let err = field.parentElement.querySelector('.field-error');
+  if (!err) { err = document.createElement('span'); err.className = 'field-error'; field.parentElement.appendChild(err); }
+  err.textContent = msg;
+}
+function _formClear(form) {
+  form.querySelectorAll('.field-error').forEach(e => e.remove());
+  form.querySelectorAll('input,select,textarea').forEach(f => (f.style.borderColor = ''));
+}
+
 async function _postForm(url, data, form, successEl) {
   const submit = form.querySelector('[type=submit]');
+  const origLabel = submit?.dataset.label || submit?.textContent || 'Send';
   if (submit) { submit.disabled = true; submit.textContent = 'Sending…'; }
   try {
     const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
-    if (!res.ok) throw new Error('Server error');
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || 'Server error');
+    }
     form.reset();
-    if (successEl) { successEl.style.display = 'block'; }
-    else if (typeof showToast === 'function') showToast('Message sent! We\'ll be in touch soon.');
-  } catch {
-    if (typeof showToast === 'function') showToast('Could not send. Please email us directly.');
+    _formClear(form);
+    if (successEl) { successEl.style.display = 'block'; successEl.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+    else if (typeof showToast === 'function') showToast('Sent! We\'ll be in touch soon.');
+  } catch (err) {
+    if (typeof showToast === 'function') showToast(err.message || 'Could not send. Please email us directly.');
   } finally {
-    if (submit) { submit.disabled = false; submit.textContent = submit.dataset.label || 'Send'; }
+    if (submit) { submit.disabled = false; submit.textContent = origLabel; }
   }
 }
 
@@ -397,8 +413,17 @@ function _initContactForm() {
   if (!form) return;
   form.addEventListener('submit', async e => {
     e.preventDefault();
-    const fd = new FormData(form);
-    await _postForm('/api/contact', { name: fd.get('name'), email: fd.get('email'), phone: fd.get('phone') || '', subject: fd.get('subject'), message: fd.get('message') }, form, document.getElementById('contact-success'));
+    _formClear(form);
+    const fd   = new FormData(form);
+    const name = fd.get('name')?.trim() || '';
+    const email = fd.get('email')?.trim() || '';
+    const message = fd.get('message')?.trim() || '';
+    let valid = true;
+    if (!name)    { _formError(form.querySelector('[name=name]'),    'Please enter your name');    valid = false; }
+    if (!email)   { _formError(form.querySelector('[name=email]'),   'Please enter your email');   valid = false; }
+    if (!message) { _formError(form.querySelector('[name=message]'), 'Please enter your message'); valid = false; }
+    if (!valid) return;
+    await _postForm('/api/contact', { name, email, phone: fd.get('phone') || '', subject: fd.get('subject') || '', message }, form, document.getElementById('contact-success'));
   });
 }
 
@@ -407,8 +432,17 @@ function _initVolunteerForm() {
   if (!form) return;
   form.addEventListener('submit', async e => {
     e.preventDefault();
-    const fd = new FormData(form);
-    await _postForm('/api/volunteer', { name: fd.get('name'), email: fd.get('email'), phone: fd.get('phone') || '', role: fd.get('role'), availability: fd.get('availability') || '', message: fd.get('message') || '' }, form, document.getElementById('volunteer-application-success'));
+    _formClear(form);
+    const fd    = new FormData(form);
+    const name  = fd.get('name')?.trim() || '';
+    const email = fd.get('email')?.trim() || '';
+    const role  = fd.get('role')?.trim() || '';
+    let valid = true;
+    if (!name)  { _formError(form.querySelector('[name=name]'),  'Please enter your name');           valid = false; }
+    if (!email) { _formError(form.querySelector('[name=email]'), 'Please enter your email');          valid = false; }
+    if (!role)  { _formError(form.querySelector('[name=role]'),  'Please select an area of interest'); valid = false; }
+    if (!valid) return;
+    await _postForm('/api/volunteer', { name, email, phone: fd.get('phone') || '', role, availability: fd.get('availability') || '', message: fd.get('message') || '' }, form, document.getElementById('volunteer-application-success'));
   });
 }
 
