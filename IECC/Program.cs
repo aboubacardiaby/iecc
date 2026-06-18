@@ -37,7 +37,13 @@ app.UseAuthorization();
 // ── DB schema on startup ───────────────────────────────────
 await using (var scope = app.Services.CreateAsyncScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<IeccDbContext>();
+    var db   = scope.ServiceProvider.GetRequiredService<IeccDbContext>();
+    var log  = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    for (var attempt = 1; attempt <= 10; attempt++)
+    {
+        try { await db.Database.OpenConnectionAsync(); db.Database.CloseConnection(); break; }
+        catch { log.LogWarning("DB not ready (attempt {A}/10), retrying in 3s…", attempt); await Task.Delay(3000); }
+    }
     try
     {
         await db.Database.MigrateAsync();

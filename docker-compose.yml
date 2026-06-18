@@ -4,17 +4,10 @@ services:
     ports:
       - "5000:8080"
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=ieccmndb;Username=ieccmnsvc;Password=Minneapolis2@"
-      PayPal__ClientId: ""
-      PayPal__ClientSecret: ""
-      PayPal__Mode: sandbox
-      Smtp__Host: smtp.gmail.com
-      Smtp__Port: "587"
-      Smtp__Username: ""
-      Smtp__Password: ""
-      Smtp__FromName: "IECC Masjid"
-      Smtp__FromEmail: ""
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=ieccmndb;Username=ieccmnsvc;Password=Minneapolis2@;SSL Mode=Disable"
+      Admin__Username: admin
+      Admin__Password: Minneapolis2@
     depends_on:
       postgres:
         condition: service_healthy
