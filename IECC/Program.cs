@@ -38,7 +38,28 @@ app.UseAuthorization();
 await using (var scope = app.Services.CreateAsyncScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<IeccDbContext>();
-    await db.Database.MigrateAsync();
+    try
+    {
+        await db.Database.MigrateAsync();
+    }
+    catch (Npgsql.PostgresException ex) when (ex.SqlState == "42P07")
+    {
+        // Tables already exist from a prior EnsureCreated run (no migration history).
+        // Create the history table and mark all migrations as applied without re-running them.
+        await db.Database.ExecuteSqlRawAsync("""
+            CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+                "MigrationId"    character varying(150) NOT NULL,
+                "ProductVersion" character varying(32)  NOT NULL,
+                CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+            )
+            """);
+        foreach (var m in db.Database.GetMigrations())
+            await db.Database.ExecuteSqlRawAsync($"""
+                INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+                VALUES ('{m}', '8.0.11')
+                ON CONFLICT DO NOTHING
+                """);
+    }
 }
 
 string? cachedToken    = null;
