@@ -5,7 +5,7 @@ services:
       - "5000:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=iecc;Username=iecc;Password=MyM@sjid#2026!;SSL Mode=Disable"
+      ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=iecc;Username=iecc;Password=MyM@sjid#2026!;SSL Mode=Disable"
       Admin__Username: admin
       Admin__Password: Minneapolis2@
     depends_on:
