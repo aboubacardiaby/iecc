@@ -99,12 +99,6 @@ jobs:
           CONTAINER_PORT: ${{ env.CONTAINER_PORT }}
           GHCR_PAT: ${{ secrets.GHCR_PAT }}
           GHCR_USER: ${{ github.actor }}
-          PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
-          PAYPAL_CLIENT_SECRET: ${{ secrets.PAYPAL_CLIENT_SECRET }}
-          PAYPAL_MODE: ${{ secrets.PAYPAL_MODE }}
-          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
-          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-          SMTP_FROM_EMAIL: ${{ secrets.SMTP_FROM_EMAIL }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
@@ -116,7 +110,7 @@ jobs:
           timeout: 120s
           command_timeout: 20m
           script_stop: true
-          envs: IMAGE,CONTAINER_NAME,POSTGRES_CONTAINER_NAME,DOCKER_NETWORK,POSTGRES_VOLUME,POSTGRES_DB,POSTGRES_USER,HOST_PORT,CONTAINER_PORT,GHCR_PAT,GHCR_USER,PAYPAL_CLIENT_ID,PAYPAL_CLIENT_SECRET,PAYPAL_MODE,SMTP_USERNAME,SMTP_PASSWORD,SMTP_FROM_EMAIL,DB_PASSWORD,ADMIN_USERNAME,ADMIN_PASSWORD
+          envs: IMAGE,CONTAINER_NAME,POSTGRES_CONTAINER_NAME,DOCKER_NETWORK,POSTGRES_VOLUME,POSTGRES_DB,POSTGRES_USER,HOST_PORT,CONTAINER_PORT,GHCR_PAT,GHCR_USER,DB_PASSWORD,ADMIN_USERNAME,ADMIN_PASSWORD
           script: |
             set -eo pipefail
 
@@ -158,11 +152,7 @@ jobs:
               -p 127.0.0.1:${HOST_PORT}:${CONTAINER_PORT} \
               -e ASPNETCORE_ENVIRONMENT=Production \
               -e ASPNETCORE_URLS="http://+:${CONTAINER_PORT}" \
-              -e "ConnectionStrings__DefaultConnection=Host=${POSTGRES_CONTAINER_NAME};Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${DB_PASSWORD}" \
-              -e PayPal__ClientId="$PAYPAL_CLIENT_ID" -e PayPal__ClientSecret="$PAYPAL_CLIENT_SECRET" -e PayPal__Mode="$PAYPAL_MODE" \
-              -e Smtp__Host="smtp.gmail.com" -e Smtp__Port="587" \
-              -e Smtp__Username="$SMTP_USERNAME" -e Smtp__Password="$SMTP_PASSWORD" \
-              -e Smtp__FromName="IECC Masjid" -e Smtp__FromEmail="$SMTP_FROM_EMAIL" \
+              -e "ConnectionStrings__DefaultConnection=Host=${POSTGRES_CONTAINER_NAME};Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${DB_PASSWORD};SSL Mode=Disable" \
               -e Admin__Username="${ADMIN_USERNAME:-admin}" -e Admin__Password="$ADMIN_PASSWORD" \
               "$IMAGE"
 
