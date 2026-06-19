@@ -1030,7 +1030,7 @@ body {
   flex-shrink: 0;
 }
 @keyframes pp-spin { to { transform: rotate(360deg); } }
-#paypal-button-container { min-height: 45px; }
+#paypal-button-container, #paypal-card-button-container { min-height: 45px; }
 
 .pay-steps {
   background: #f9f9f7;
@@ -1041,53 +1041,6 @@ body {
   gap: 5px;
 }
 .pay-steps p { font-size: .78rem; color: var(--muted); line-height: 1.4; }
-
-/* Card form */
-.card-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.card-field { display: flex; flex-direction: column; gap: 4px; }
-.card-field.full { grid-column: 1 / -1; }
-.card-field.half { grid-column: span 1; }
-
-.card-field label {
-  font-size: .67rem;
-  font-weight: 700;
-  letter-spacing: .8px;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.card-field input,
-.card-input-wrap input {
-  padding: 10px 12px;
-  border: 1.5px solid #ddd;
-  border-radius: 6px;
-  font-size: .9rem;
-  color: var(--text);
-  outline: none;
-  transition: border-color .15s;
-  width: 100%;
-}
-.card-field input:focus,
-.card-input-wrap input:focus { border-color: var(--green); }
-
-.card-input-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.card-brand {
-  position: absolute;
-  right: 10px;
-  font-size: 1rem;
-  pointer-events: none;
-}
 
 .card-secure {
   font-size: .7rem;

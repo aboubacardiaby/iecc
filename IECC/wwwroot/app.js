@@ -121,47 +121,50 @@ function setFreq(btn) {
 }
 
 /* ── PayPal SDK ───────────────────────────────────────── */
-let ppSDKLoading = false;
-let ppSDKLoaded  = false;
-let ppButtons    = null;
+/* Both the PayPal tab and Card tab go through PayPal's Orders API:
+   create-order → buyer approves → capture-order. The Card tab simply
+   renders PayPal's hosted card button (fundingSource CARD), which lets
+   donors pay by debit/credit card via guest checkout without this site
+   ever handling raw card data. */
+let ppSDKLoading  = false;
+let ppSDKLoaded   = false;
+let ppButtons     = null;
+let ppCardButtons = null;
 
-async function initPayPal() {
-  if (ppButtons) return;
-
-  const container = document.getElementById('paypal-button-container');
-  const loading   = document.getElementById('paypal-loading');
-
-  if (!ppSDKLoaded) {
-    if (ppSDKLoading) return;
-    ppSDKLoading = true;
-    try {
-      const res = await fetch('/api/paypal/client-id');
-      if (!res.ok) throw new Error(`API error ${res.status}`);
-      const { clientId } = await res.json();
-      if (!clientId || clientId.startsWith('YOUR_')) {
-        if (loading) loading.textContent = 'PayPal is not yet configured.';
-        return;
-      }
-      await new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&intent=capture`;
-        s.onload = resolve;
-        s.onerror = () => reject(new Error(`PayPal SDK failed to load — client ID may be invalid or expired`));
-        document.head.appendChild(s);
-      });
-      ppSDKLoaded = true;
-    } catch (err) {
-      console.error('[PayPal]', err?.message || err);
-      if (loading) loading.textContent = 'PayPal credentials are invalid or expired. Please contact the admin.';
-      ppSDKLoading = false;
-      return;
+async function ensurePayPalSDK(loadingEl) {
+  if (ppSDKLoaded) return true;
+  if (ppSDKLoading) return false;
+  ppSDKLoading = true;
+  try {
+    const res = await fetch('/api/paypal/client-id');
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+    const { clientId } = await res.json();
+    if (!clientId || clientId.startsWith('YOUR_')) {
+      if (loadingEl) loadingEl.textContent = 'PayPal is not yet configured.';
+      return false;
     }
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&intent=capture&enable-funding=card`;
+      s.onload = resolve;
+      s.onerror = () => reject(new Error(`PayPal SDK failed to load — client ID may be invalid or expired`));
+      document.head.appendChild(s);
+    });
+    ppSDKLoaded = true;
+    return true;
+  } catch (err) {
+    console.error('[PayPal]', err?.message || err);
+    if (loadingEl) loadingEl.textContent = 'PayPal credentials are invalid or expired. Please contact the admin.';
+    return false;
+  } finally {
+    ppSDKLoading = false;
   }
+}
 
-  if (loading) loading.style.display = 'none';
-
-  ppButtons = paypal.Buttons({
-    style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'donate', height: 45 },
+function makePPButtons(fundingSource, method) {
+  return paypal.Buttons({
+    fundingSource,
+    style: { layout: 'vertical', color: fundingSource === paypal.FUNDING.CARD ? 'black' : 'gold', shape: 'rect', height: 45, ...(fundingSource !== paypal.FUNDING.CARD && { label: 'donate' }) },
 
     createOrder: async () => {
       const res = await fetch('/api/paypal/create-order', {
@@ -177,18 +180,34 @@ async function initPayPal() {
       const res = await fetch(`/api/paypal/capture-order/${data.orderID}`, { method: 'POST' });
       if (res.ok) {
         const captured = await res.json();
-        showConfirmation('paypal', captured.payerEmail);
+        showConfirmation(method, captured.payerEmail);
         // Receipt is sent server-side automatically after capture
       } else {
         showToast('Payment could not be completed. Please try again.');
       }
     },
 
-    onError:  ()  => showToast('PayPal encountered an error. Please try another method.'),
+    onError:  ()  => showToast('Payment could not be processed. Please try another method.'),
     onCancel: ()  => showToast('Payment cancelled.')
   });
+}
 
+async function initPayPal() {
+  if (ppButtons) return;
+  const loading = document.getElementById('paypal-loading');
+  if (!(await ensurePayPalSDK(loading))) return;
+  if (loading) loading.style.display = 'none';
+  ppButtons = makePPButtons(paypal.FUNDING.PAYPAL, 'paypal');
   ppButtons.render('#paypal-button-container');
+}
+
+async function initPayPalCard() {
+  if (ppCardButtons) return;
+  const loading = document.getElementById('card-loading');
+  if (!(await ensurePayPalSDK(loading))) return;
+  if (loading) loading.style.display = 'none';
+  ppCardButtons = makePPButtons(paypal.FUNDING.CARD, 'card');
+  ppCardButtons.render('#paypal-card-button-container');
 }
 
 /* ── Modal: payment tab ──────────────────────────────── */
@@ -199,18 +218,19 @@ function setPayTab(btn) {
   document.querySelectorAll('.pay-panel').forEach(p => p.classList.add('hidden'));
   document.getElementById('panel-' + selectedTab).classList.remove('hidden');
 
-  // Donor info: only for Zelle (PayPal and Card handle info themselves)
+  // Donor info: only for Zelle (PayPal and Card render their own checkout button)
   const donorSection = document.getElementById('donor-info-section');
   donorSection.style.display = selectedTab === 'zelle' ? '' : 'none';
 
-  // Footer submit button: hide for PayPal (its own button handles submission)
-  const submitBtn   = document.getElementById('modal-submit');
-  const summaryLine = document.querySelector('.modal-summary');
-  const isPayPal    = selectedTab === 'paypal';
-  submitBtn.style.display   = isPayPal ? 'none' : '';
-  summaryLine.style.display = isPayPal ? 'none' : '';
+  // Footer submit button: hidden for PayPal & Card (their PayPal buttons handle submission)
+  const submitBtn    = document.getElementById('modal-submit');
+  const summaryLine  = document.querySelector('.modal-summary');
+  const usesPPButton = selectedTab === 'paypal' || selectedTab === 'card';
+  submitBtn.style.display   = usesPPButton ? 'none' : '';
+  summaryLine.style.display = usesPPButton ? 'none' : '';
 
-  if (isPayPal) initPayPal();
+  if (selectedTab === 'paypal') initPayPal();
+  if (selectedTab === 'card')   initPayPalCard();
 
   syncDisplay();
 }
@@ -250,9 +270,7 @@ function handleSubmit() {
     showToast(`Minimum donation is $${MIN_DONATION}`);
     return;
   }
-  if (selectedTab === 'paypal') {
-    return; // PayPal SDK button handles its own submission
-  } else if (selectedTab === 'zelle') {
+  if (selectedTab === 'zelle') {
     const name  = document.querySelectorAll('.donor-input')[0]?.value.trim() || '';
     const email = document.querySelectorAll('.donor-input')[1]?.value.trim() || '';
     showConfirmation('zelle', email);
@@ -261,18 +279,8 @@ function handleSubmit() {
       method: 'Zelle', frequency: selectedFreq,
       transactionId: `ZELLE-${Date.now()}`
     });
-  } else {
-    // Card — basic validation
-    const cardNum = document.getElementById('card-num').value.replace(/\s/g, '');
-    if (cardNum.length < 13) { showToast('Please enter a valid card number'); return; }
-    const cardEmail = document.querySelector('#panel-card input[type="email"]')?.value.trim() || '';
-    showConfirmation('card', cardEmail);
-    sendReceipt({
-      donorName: '', donorEmail: cardEmail, amount: selectedAmount,
-      method: 'Credit/Debit Card', frequency: selectedFreq,
-      transactionId: `CARD-${Date.now()}`
-    });
   }
+  // PayPal & Card: their rendered PayPal buttons handle their own submission
 }
 
 function showConfirmation(method, receiptEmail) {
@@ -283,7 +291,7 @@ function showConfirmation(method, receiptEmail) {
   const instructions = {
     zelle:  `Send <strong>${fmt(selectedAmount)}</strong> via Zelle to <strong>612-985-2768</strong><br>Enrolled as: IECC Masjid<br>Memo: <em>Masjid Donation</em>`,
     paypal: `Your PayPal payment of <strong>${fmt(selectedAmount)}</strong> has been received.<br>May Allah reward you for your generosity!`,
-    card:   `Your donation of <strong>${fmt(selectedAmount)}</strong> has been submitted.`
+    card:   `Your card payment of <strong>${fmt(selectedAmount)}</strong> has been received.<br>May Allah reward you for your generosity!`
   }[method];
 
   const receiptLine = receiptEmail
@@ -299,25 +307,6 @@ function showConfirmation(method, receiptEmail) {
 function closeConfirm() {
   document.getElementById('confirm-backdrop').style.display = 'none';
   document.body.style.overflow = '';
-}
-
-/* ── Card formatting helpers ─────────────────────────── */
-function fmtCard(input) {
-  let val = input.value.replace(/\D/g, '').slice(0, 16);
-  input.value = val.replace(/(.{4})/g, '$1 ').trim();
-
-  const brand = document.getElementById('card-brand');
-  if (val.startsWith('4'))            brand.textContent = '💳 Visa';
-  else if (/^5[1-5]/.test(val))      brand.textContent = '💳 MC';
-  else if (/^3[47]/.test(val))       brand.textContent = '💳 Amex';
-  else if (val.startsWith('6'))      brand.textContent = '💳 Disc';
-  else                                brand.textContent = '';
-}
-
-function fmtExpiry(input) {
-  let val = input.value.replace(/\D/g, '').slice(0, 4);
-  if (val.length >= 3) val = val.slice(0, 2) + ' / ' + val.slice(2);
-  input.value = val;
 }
 
 /* ── Copy to clipboard ───────────────────────────────── */
