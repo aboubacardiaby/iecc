@@ -190,11 +190,14 @@ const MODAL_HTML = `
         <div id="paypal-button-container"></div>
       </div>
       <div class="pay-panel hidden" id="panel-card">
-        <div class="paypal-panel-header"><span class="paypal-panel-title">Secure Card Checkout</span></div>
-        <p class="paypal-panel-note">Pay by debit or credit card &mdash; no PayPal account required.</p>
-        <div id="card-loading" class="paypal-loading-msg"><span class="paypal-spinner"></span> Loading secure checkout&hellip;</div>
-        <div id="paypal-card-button-container"></div>
-        <p class="card-secure">&#128274; Secured by PayPal. Card info never touches our servers.</p>
+        <div class="card-form">
+          <div class="card-field full"><label>Name on Card</label><input type="text" placeholder="Full name" autocomplete="cc-name"/></div>
+          <div class="card-field full"><label>Card Number</label><div class="card-input-wrap"><input type="text" placeholder="1234 5678 9012 3456" maxlength="19" id="card-num" oninput="fmtCard(this)" autocomplete="cc-number"/><span class="card-brand" id="card-brand"></span></div></div>
+          <div class="card-field half"><label>Expiry</label><input type="text" placeholder="MM / YY" maxlength="7" oninput="fmtExpiry(this)" autocomplete="cc-exp"/></div>
+          <div class="card-field half"><label>CVV</label><input type="text" placeholder="123" maxlength="4" autocomplete="cc-csc"/></div>
+          <div class="card-field full"><label>Email (receipt)</label><input type="email" placeholder="your@email.com" autocomplete="email"/></div>
+        </div>
+        <p class="card-secure">&#128274; Secured &amp; encrypted. Card info never stored.</p>
       </div>
     </div>
     <div class="modal-section" id="donor-info-section">
