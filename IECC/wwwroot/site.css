@@ -322,6 +322,35 @@ body {
 .footer-bottom { max-width:1160px; margin:0 auto; padding-top:18px; border-top:1px solid rgba(255,255,255,.07); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
 .footer-copy { font-size:.68rem; color:rgba(255,255,255,.26); line-height:1.5; }
 
+/* ── CONSTRUCTION BANNER ─────────────────────────────── */
+.construction-banner {
+  background: linear-gradient(90deg, #e8a020 0%, #d4920a 100%);
+  padding: 12px 20px;
+  text-align: center;
+  margin-top: 64px;
+}
+.construction-banner-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.construction-icon {
+  font-size: 1.3rem;
+}
+.construction-banner p {
+  font-size: 0.88rem;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.5;
+}
+.construction-banner strong {
+  font-weight: 800;
+}
+
 /* ── REVEAL ───────────────────────────────────────────── */
 .reveal { opacity:0; transform:translateY(18px); transition:opacity .5s ease,transform .5s ease; }
 .reveal.visible { opacity:1; transform:translateY(0); }

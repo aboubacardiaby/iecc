@@ -11,11 +11,11 @@ const NEEDS = [
   { icon: '🚿', label: 'Wudu Facilities' }
 ];
 
-const PRESET_AMOUNTS = [5, 25, 50, 100, 250, 500];
-const MIN_DONATION = 5;
+const PRESET_AMOUNTS = [100, 250, 500, 1000, 2500, 5000];
+const MIN_DONATION = 100;
 
 /* ── Modal state ─────────────────────────────────────── */
-let selectedAmount = 5;
+let selectedAmount = 100;
 let selectedFreq   = 'one-time';
 let selectedTab    = 'zelle';
 
@@ -281,7 +281,7 @@ function showConfirmation(method, receiptEmail) {
   const methodLabel  = { zelle: 'Zelle', paypal: 'PayPal', card: 'Credit/Debit Card' }[method];
   const freqLabel    = selectedFreq === 'monthly' ? 'Monthly donation' : 'One-time donation';
   const instructions = {
-    zelle:  `Send <strong>${fmt(selectedAmount)}</strong> via Zelle to <strong>612-985-2768</strong><br>Enrolled as: IECC Masjid<br>Memo: <em>Masjid Donation</em>`,
+    zelle:  `Send <strong>${fmt(selectedAmount)}</strong> via Zelle to <strong>612-985-2768</strong><br>Enrolled as: Islamic Education CTR<br>Memo: <em>Masjid Donation</em>`,
     paypal: `Your PayPal payment of <strong>${fmt(selectedAmount)}</strong> has been received.<br>May Allah reward you for your generosity!`,
     card:   `Your donation of <strong>${fmt(selectedAmount)}</strong> has been submitted.`
   }[method];
