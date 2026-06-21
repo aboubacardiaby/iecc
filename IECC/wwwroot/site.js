@@ -84,7 +84,7 @@ const LOGO_SVG = `<svg viewBox="0 0 60 60" width="36" height="36" fill="none" xm
 /* ── Nav HTML ─────────────────────────────────────────── */
 const NAV_HTML = `<nav class="site-nav" id="site-nav">
   <div class="nav-container">
-    <a href="/" class="nav-brand">${LOGO_SVG}<div class="brand-text"><span class="brand-name">IECC</span><span class="brand-tag">MASJID</span></div></a>
+    <a href="/" class="nav-brand">${LOGO_SVG}<div class="brand-text"><span class="brand-name">IECC</span><span class="brand-tag">Islamic Education CTR</span></div></a>
     <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
     <ul class="nav-menu" id="nav-menu">
       <li><a href="/"                  data-href="index">Home</a></li>
@@ -170,17 +170,16 @@ const MODAL_HTML = `
     <div class="modal-section">
       <p class="modal-label">Select Amount</p>
       <div class="modal-amounts" id="modal-amounts"></div>
-      <div class="modal-custom"><span class="custom-dollar">$</span><input type="number" id="custom-amt" placeholder="Other amount (min $5)" min="5" oninput="handleCustomAmt(this)"/></div>
+      <div class="modal-custom"><span class="custom-dollar">$</span><input type="number" id="custom-amt" placeholder="Other amount (min $100)" min="100" oninput="handleCustomAmt(this)"/></div>
     </div>
     <div class="modal-section">
       <p class="modal-label">Payment Method</p>
       <div class="pay-tabs">
         <button class="pay-tab active" data-tab="zelle"  onclick="setPayTab(this)">Zelle</button>
         <button class="pay-tab"        data-tab="paypal" onclick="setPayTab(this)">PayPal</button>
-        <button class="pay-tab"        data-tab="card"   onclick="setPayTab(this)">Card</button>
       </div>
       <div class="pay-panel" id="panel-zelle">
-        <div class="pay-instruction"><div class="pay-instr-icon">&#128242;</div><div><p class="pay-instr-title">Send via Zelle to:</p><p class="pay-number">612-985-2768</p><p class="pay-note">Enrolled as: <strong>IECC Masjid</strong></p><p class="pay-note">Memo: <em>Masjid Donation</em></p></div><button class="instr-copy" data-copy="612-985-2768" onclick="copyText(this)">Copy</button></div>
+        <div class="pay-instruction"><div class="pay-instr-icon">&#128242;</div><div><p class="pay-instr-title">Send via Zelle to:</p><p class="pay-number">612-985-2768</p><p class="pay-note">Enrolled as: <strong>Islamic Education CTR</strong></p><p class="pay-note">Memo: <em>Masjid Donation</em></p></div><button class="instr-copy" data-copy="612-985-2768" onclick="copyText(this)">Copy</button></div>
         <div class="pay-steps"><p>1. Open your banking app &rarr; <strong>Zelle</strong></p><p>2. Send <strong id="zelle-amt-display">$100</strong> to <strong>612-985-2768</strong></p><p>3. Memo: <em>Masjid Donation</em></p></div>
       </div>
       <div class="pay-panel hidden" id="panel-paypal">
@@ -188,16 +187,6 @@ const MODAL_HTML = `
         <p class="paypal-panel-note">A PayPal window will open to complete your donation.</p>
         <div id="paypal-loading" class="paypal-loading-msg"><span class="paypal-spinner"></span> Loading PayPal&hellip;</div>
         <div id="paypal-button-container"></div>
-      </div>
-      <div class="pay-panel hidden" id="panel-card">
-        <div class="card-form">
-          <div class="card-field full"><label>Name on Card</label><input type="text" placeholder="Full name" autocomplete="cc-name"/></div>
-          <div class="card-field full"><label>Card Number</label><div class="card-input-wrap"><input type="text" placeholder="1234 5678 9012 3456" maxlength="19" id="card-num" oninput="fmtCard(this)" autocomplete="cc-number"/><span class="card-brand" id="card-brand"></span></div></div>
-          <div class="card-field half"><label>Expiry</label><input type="text" placeholder="MM / YY" maxlength="7" oninput="fmtExpiry(this)" autocomplete="cc-exp"/></div>
-          <div class="card-field half"><label>CVV</label><input type="text" placeholder="123" maxlength="4" autocomplete="cc-csc"/></div>
-          <div class="card-field full"><label>Email (receipt)</label><input type="email" placeholder="your@email.com" autocomplete="email"/></div>
-        </div>
-        <p class="card-secure">&#128274; Secured &amp; encrypted. Card info never stored.</p>
       </div>
     </div>
     <div class="modal-section" id="donor-info-section">
