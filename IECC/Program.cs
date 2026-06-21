@@ -147,7 +147,13 @@ app.MapPost("/api/paypal/create-order", async (CreateOrderRequest req, IHttpClie
     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
     var payload = JsonSerializer.Serialize(new { intent = "CAPTURE", purchase_units = new[] { new { amount = new { currency_code = "USD", value = req.Amount.ToString("F2") }, description = "IECC Masjid Donation" } } });
     var resp = await client.PostAsync($"{ppBase}/v2/checkout/orders", new StringContent(payload, Encoding.UTF8, "application/json"));
-    using var doc = await JsonDocument.ParseAsync(await resp.Content.ReadAsStreamAsync());
+    var body = await resp.Content.ReadAsStringAsync();
+    if (!resp.IsSuccessStatusCode)
+    {
+        app.Logger.LogError("PayPal create-order failed ({Status}): {Body}", resp.StatusCode, body);
+        return Results.Problem("PayPal could not create the order. Please verify the PayPal settings in Admin → Settings.", statusCode: 502);
+    }
+    using var doc = JsonDocument.Parse(body);
     return Results.Ok(new { id = doc.RootElement.GetProperty("id").GetString() });
 });
 
@@ -159,7 +165,13 @@ app.MapPost("/api/paypal/capture-order/{orderId}", async (string orderId, IHttpC
     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
     client.DefaultRequestHeaders.Add("PayPal-Request-Id", Guid.NewGuid().ToString());
     var resp = await client.PostAsync($"{ppBase}/v2/checkout/orders/{orderId}/capture", new StringContent("{}", Encoding.UTF8, "application/json"));
-    using var doc = await JsonDocument.ParseAsync(await resp.Content.ReadAsStreamAsync());
+    var body = await resp.Content.ReadAsStringAsync();
+    if (!resp.IsSuccessStatusCode)
+    {
+        app.Logger.LogError("PayPal capture-order failed ({Status}): {Body}", resp.StatusCode, body);
+        return Results.Problem("PayPal could not capture the order.", statusCode: 502);
+    }
+    using var doc = JsonDocument.Parse(body);
     var status = doc.RootElement.GetProperty("status").GetString();
     string? payerEmail = null, payerName = null;
     decimal amount = 0;
