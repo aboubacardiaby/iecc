@@ -12,7 +12,7 @@ const NEEDS = [
 ];
 
 const PRESET_AMOUNTS = [100, 250, 500, 1000, 2500, 5000];
-const MIN_DONATION = 100;
+const MIN_DONATION = 1;
 
 /* ── Modal state ─────────────────────────────────────── */
 let selectedAmount = 100;

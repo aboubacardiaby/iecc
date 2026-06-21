@@ -170,7 +170,7 @@ const MODAL_HTML = `
     <div class="modal-section">
       <p class="modal-label">Select Amount</p>
       <div class="modal-amounts" id="modal-amounts"></div>
-      <div class="modal-custom"><span class="custom-dollar">$</span><input type="number" id="custom-amt" placeholder="Other amount (min $100)" min="100" oninput="handleCustomAmt(this)"/></div>
+      <div class="modal-custom"><span class="custom-dollar">$</span><input type="number" id="custom-amt" placeholder="Enter any amount" min="1" oninput="handleCustomAmt(this)"/></div>
     </div>
     <div class="modal-section">
       <p class="modal-label">Payment Method</p>
